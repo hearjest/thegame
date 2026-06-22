@@ -1,3 +1,5 @@
+import {statusEffect} from "./types/Card"
+
 interface Entity{
     id:number
     position:number
@@ -9,7 +11,7 @@ interface Entity{
     minSpeed:number
     maxSpeed:number
     rolledSpeed:number
-    statuses:string[]
+    statuses:Record<statusEffect,number>|null
 }
 
 enum Intent{
