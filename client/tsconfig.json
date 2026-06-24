@@ -1,0 +1,13 @@
+{
+    "name":"thegame",
+    "type":"module",
+    "compilerOptions": {
+        "module": "ESNext",         
+        "moduleResolution": "Bundler",
+        "target": "ES2020",
+        "strict": true,
+        "skipLibCheck": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true
+    }
+}

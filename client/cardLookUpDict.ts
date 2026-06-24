@@ -1,5 +1,5 @@
-import {Card,targetSide,targetType} from "./types/Card"
-
+import type {Card} from "./types/Card"
+import {targetSide,targetType} from "./enums"
 const ability1:Card={
     name:"pee",
     cardId:1,

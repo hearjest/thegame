@@ -1,7 +1,8 @@
-import {statusEffect} from "./types/Card"
+import {statusEffect} from "./enums"
 
 interface Entity{
     id:number
+    playerId:number
     position:number
     hp:number
     atk:number
@@ -11,13 +12,9 @@ interface Entity{
     minSpeed:number
     maxSpeed:number
     rolledSpeed:number
-    statuses:Record<statusEffect,number>|null
+    alive:boolean
 }
 
-enum Intent{
-    Attack,
-    Defend,
-    Unknown,
-}
+
 
 export {Entity}

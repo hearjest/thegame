@@ -5,4 +5,4 @@ type Action=
 | {type:"endTurn"; ownerId:number}
 
 
-export {Action}
+export type {Action}

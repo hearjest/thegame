@@ -1,7 +1,5 @@
-import {Entity} from "../EntityInterface"
-import {Card} from "./Card"
-import {Action} from "./Action"
-
+import type {deck} from "./Card"
+import type {Player,EnemyPlayer,Actor} from "./Player"
 enum Phase{
     ROUND_START,
     ENTITY_TURN,
@@ -11,19 +9,13 @@ enum Phase{
     RESOLVE
 }
 
-type deck={
-    hand:Card[]
-    drawPile:Card[]
-    discardPile:Card[]
-}
+
 
 
 type CombatState={
-    allies:Entity[]
-    enemies:Entity[]
-    decks:Record<number,deck>//player id->hand
-    actionPoints:Record<number,number> //entity->ap
-    coins:Record<number,number>
+    players:Record<number,Player>
+    //enemies:Record<number,Entity>
+    enemies:Record<number,EnemyPlayer>
     phase:Phase
     roundNum:number
     // drawPile:Card[]
@@ -39,9 +31,9 @@ type CombatState={
 
 
 function addCoins(state:CombatState,playerId:number,amount:number):CombatState{
-    let coins=state.coins[playerId]
+    let coins=state.players[playerId].coins
     if(coins+amount>0){
-        state.coins[playerId]+=amount
+        state.players[playerId].coins+=amount
         return state
     }
     return state
@@ -49,9 +41,9 @@ function addCoins(state:CombatState,playerId:number,amount:number):CombatState{
 
 
 function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
-    let ap=state.actionPoints[playerId]
+    let ap=state.players[playerId].currAP
     if(ap+amount>0){
-        state.actionPoints[playerId]+=amount
+        state.players[playerId].currAP+=amount
         return state
     }
     return state
@@ -66,4 +58,5 @@ function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
 
 
 
-export {Phase,CombatState,deck}
+export {Phase}
+export type {CombatState,deck}

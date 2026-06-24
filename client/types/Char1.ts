@@ -1,6 +1,6 @@
 import {Entity} from "../EntityInterface"
-import {Card,targetSide,statusEffect,targetType} from "../types/Card"
-
+import {Card} from "./Card"
+import {targetSide,targetType} from "../enums"
 const ability1:Card={
     name:"pee",
     cardId:1,
@@ -29,5 +29,20 @@ let char1:Entity={
     maxSpeed:6,
     position:-1,
     rolledSpeed:-1,
-    statuses:null
 }
+
+
+let char2:Entity={
+    id:2,
+    hp:13,
+    atk:22,
+    magAtk:0,
+    def:10,
+    magDef:4,
+    minSpeed:3,
+    maxSpeed:2,
+    position:1,
+    rolledSpeed:-1,
+}
+
+export {char1,char2}
