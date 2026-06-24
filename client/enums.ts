@@ -35,7 +35,7 @@ enum targetType{
     SELF
 }
 
-enum effect{
+enum cardType{
     BUFF,
     DEBUFF,
     ATK,
@@ -43,4 +43,12 @@ enum effect{
     GAIN_SHIELD
 }
 
-export{Intent,targetSide,targetType,effect,statusEffect}
+enum buffType{
+    PHYS_DMG,
+    MAG_DMG,
+    PHYS_DEF,
+    MAG_DEF
+}
+
+
+export{Intent,targetSide,targetType,cardType,statusEffect,buffType}

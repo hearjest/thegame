@@ -31,22 +31,32 @@ type CombatState={
 
 
 function addCoins(state:CombatState,playerId:number,amount:number):CombatState{
-    let coins=state.players[playerId].coins
-    if(coins+amount>0){
-        state.players[playerId].coins+=amount
-        return state
+    let player=state.players[playerId]
+    return {
+        ...state,
+        players:{
+            ...state.players,
+            [playerId]:{
+                ...state.players[playerId],
+                coins:player.coins+amount
+            }
+        }
     }
-    return state
 }
 
 
 function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
-    let ap=state.players[playerId].currAP
-    if(ap+amount>0){
-        state.players[playerId].currAP+=amount
-        return state
+    let player=state.players[playerId]
+    return {
+        ...state,
+        players:{
+            ...state.players,
+            [playerId]:{
+                ...state.players[playerId],
+                currAP:Math.min(player.maxAP,player.currAP+amount)
+            }
+        }
     }
-    return state
 }
 
 

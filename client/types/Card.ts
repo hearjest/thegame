@@ -1,9 +1,10 @@
-import {targetSide,statusEffect,targetType} from "../enums"
+import {targetSide,statusEffect,targetType,cardType,buffType} from "../enums"
 
 // enum conditionals
 
 type Card={
     name:string
+    cardType:cardType
     APCost:number
     cardId:number
     cardSerialNumber:number
@@ -12,9 +13,13 @@ type Card={
     targetSide:targetSide
     numTargets:number
     canCherryPickIndividuals:boolean //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
-    damage:number
+    dmg:number
+    magDmg:number
     inflicts:Record<statusEffect,number>|null
     targetType:targetType
+        buffAmount:number
+    buffDuration:number
+    buffType:buffType
 }
 
 type deck={
