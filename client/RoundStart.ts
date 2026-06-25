@@ -2,7 +2,47 @@ import type {Entity} from "./EntityInterface"
 import type {CombatState} from "./types/CombatState"
 import {shuffle} from "./helper methods/Shuffle"
 import {nextInt} from "./helper methods/rng"
-import type {Player,EnemyPlayer} from "./types/Player"
+import type {Player,EnemyPlayer,Actor} from "./types/Player"
+
+
+function expireBuffs(state: CombatState): CombatState {
+
+  // const players = Object.fromEntries(
+  //   Object.entries(state.players).map(([id, p]) => [id, expire(p)])
+  // )
+  // const enemies = Object.fromEntries(
+  //   Object.entries(state.enemies).map(([id, e]) => [id, expire(e)])
+  // )
+
+
+  const players=state.players
+  const enemies=state.enemies
+  const newPlayer:Record<number,Player>={}
+  const newEnemy:Record<number,EnemyPlayer>={}
+  for(let key of Object.values(players)){
+    let player=expire(state,key) 
+    newPlayer[key.id]=player
+  }
+    for(let key of Object.values(enemies)){
+    const ep=expire(state,key) 
+    newEnemy[key.id]=ep
+  }
+
+
+
+
+  return { ...state, 
+    players:newPlayer, 
+    enemies:newEnemy }
+}
+
+
+function expire<T extends EnemyPlayer|Player>(state:CombatState,actor:T):T{
+  return {
+    ...actor,
+    buffEffects:actor.buffEffects.filter(buff=>buff.expiryRound>state.roundNum)
+  }
+}
 
 
 function rollSpeed(state:CombatState):CombatState{

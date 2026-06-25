@@ -44,10 +44,14 @@ enum cardType{
 }
 
 enum buffType{
-    PHYS_DMG,
-    MAG_DMG,
-    PHYS_DEF,
-    MAG_DEF
+    PHYS_DMG_ADD,
+    PHYS_DMG_MULT,
+    MAG_DMG_ADD,
+    MAG_DMG_MULT,
+    PHYS_DEF_ADD,
+    PHYS_DEF_MULT,
+    MAG_DEF_ADD,
+    MAG_DEF_MULT
 }
 
 

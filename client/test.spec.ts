@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 
 import { applyAction } from "./CombatScene"
-import { targetSide, targetType, Intent ,cardType} from "./enums"
+import { targetSide, targetType, Intent ,cardType,buffType} from "./enums"
 import type { Action } from "./types/Action"
 import type { Card, deck } from "./types/Card"
 import type { CombatState } from "./types/CombatState"
@@ -24,6 +24,28 @@ function makeEntity(id: number, playerId: number, position: number, minSpeed: nu
     rolledSpeed: -1,
   }
 }
+
+
+const ability2:Card={
+    name:"pee",
+    cardType:cardType.BUFF,
+    cardId:2,
+    APCost:2,
+    cardSerialNumber:2,
+    description:"desc",
+    flavorText:"urine",
+    targetSide:targetSide.ALLY,
+    numTargets:3,
+    canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
+    dmg:5,
+    magDmg:0,
+    inflicts:null,
+    targetType:targetType.SELF,
+          buffAmount:2,
+    buffDuration:3,
+    buffType:buffType.PHYS_DMG_MULT,
+}
+
 
 const strike: Card={
   name: "Strike",
@@ -70,10 +92,7 @@ const player1: Player={
   handLimit: 5,
   combinedDEF:0,
   combinedMagDEF:0,
-  additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:1,
-  multiplicativeMagATKBuff:1,
+
   buffEffects:[]
 }
 
@@ -91,10 +110,7 @@ const enemy1: EnemyPlayer={
   intent: Intent.Attack,
   combinedDEF:0,
   combinedMagDEF:0,
-  additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:1,
-  multiplicativeMagATKBuff:1,
+
   buffEffects:[]
 }
 
@@ -118,11 +134,12 @@ describe("playCard damage", () => {
       cardId: 1,
       cardSerialNumber: 1,
       targets: [1001],
+      entityId:101
     }
     console.log(state.players[1].currAP)
     const result=applyAction(state, action)
     console.log(result.players[1].currAP)
-    expect(result.enemies[1001].currHp).toBe(55)
+    expect(result.enemies[1001].currHp).toBe(49)
   })
 
   it("floors HP at 0, never negative", () => {
@@ -130,13 +147,13 @@ describe("playCard damage", () => {
       ...state,
       enemies: { ...state.enemies, 1001: { ...state.enemies[1001], currHp: 3 } },
     }
-    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001] }
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001],entityId:101 }
     const result=applyAction(weakState, action)
     expect(result.enemies[1001].currHp).toBe(0)
   })
 
   it("spends the card's AP cost", () => {
-    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001] }
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001] ,entityId:101}
     console.log(state.players[1].currAP)
     const result=applyAction(state, action)
     console.log(result.players[1].currAP)
@@ -144,7 +161,7 @@ describe("playCard damage", () => {
   })
 
   it("moves the played card to discard", () => {
-    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001] }
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001],entityId:101 }
     console.log(state.players[1].deck)
     const result=applyAction(state, action)
     console.log(result.players[1].deck)
@@ -153,9 +170,47 @@ describe("playCard damage", () => {
   })
 
   it("does not mutate the input state", () => {
-    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001] }
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 1, cardSerialNumber: 1, targets: [1001],entityId:101 }
     const snapshotHp=state.enemies[1001].currHp
     applyAction(state, action)
     expect(state.enemies[1001].currHp).toBe(snapshotHp)
   })
+
+  it("buff applies to entity",()=>{
+      const baseDeck2: deck={
+      hand: [ability2,strike],
+      drawPile: [],
+      discardPile: [],
+    }
+    state.players[1].deck=baseDeck2
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 2, cardSerialNumber: 2, targets: [1],entityId:101 }
+    const snapshotbuffs=state.players[1].buffEffects.length
+    const result=applyAction(state,action)
+    console.log(result.players[1].buffEffects)
+    expect(result.players[1].buffEffects.length).toBe(snapshotbuffs+1)
+  })
+
+  it("buff effects entity stats",()=>{
+    const action: Action={ type: "playCard", ownerId: 1, cardId: 2, cardSerialNumber: 2, targets: [1],entityId:101 }
+    const snapshotHp=state.players[1].team[1].atk
+    const result=applyAction(state,action)
+    
+    const action2: Action={
+      type: "playCard",
+      ownerId: 1,
+      cardId: 1,
+      cardSerialNumber: 1,
+      targets: [1001],
+      entityId:101
+    }
+    console.log(result.enemies[1001].currHp)
+    //console.log(result.players[1].deck)
+    const result2=applyAction(result,action2)
+    console.log(result2.enemies[1001].currHp)
+    expect(result2.enemies[1001].currHp).toBe(state.enemies[1001].currHp-22)
+  })
+
+
+
+
 })

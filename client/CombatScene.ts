@@ -11,12 +11,15 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
   switch (action.type){
     case "playCard": {
         const card=cardDictionary[action.cardId]
+        console.log("card")
         if (!canPlayCard(combatState, action)){
+            console.log("card2")
             return combatState
         }
         switch(card.cardType){
             case cardType.ATK:{
                 const targetIds=getEligibleTargets(combatState, action)
+                console.log(targetIds)
                 const newEnemies=applyDamage(combatState,card,targetIds,action)
                 const cost=card.APCost
                 const ownerDeck=combatState.players[action.ownerId].deck
@@ -37,6 +40,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
             }
             }
             case cardType.BUFF:{
+                console.log("Helllo????")
                 const targetIds=getEligibleTargets(combatState, action)
                 const de_buff:buff={
                     type:card.buffType,
@@ -75,6 +79,9 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
                     },
                 }
             }
+
+            default:
+                return combatState
         }
     }
 
@@ -129,11 +136,21 @@ function getEligibleTargets(combatState:CombatState,action:Action):number[]{
     let arr:number[]=[]
     switch(card.targetType){
         case targetType.SELF:
+            console.log("i beg")
+            if(combatState.players[action.targets[0]]===undefined){
+                console.log("bruh")
+                return []
+            }
             if(isActorAlive(combatState.players[action.ownerId])){
+                console.log("bruh2")
                 return [action.ownerId]
             }
+            console.log("bruh3")
             return arr
         case targetType.SINGLE_ALLY_CHOOSE:{
+            if(combatState.players[action.targets[0]]===undefined){
+                return []
+            }
             const actorAlive=isActorAlive(combatState.players[action.targets[0]])
             if(actorAlive){
                 return [action.targets[0]]
@@ -153,9 +170,15 @@ function getEligibleTargets(combatState:CombatState,action:Action):number[]{
         }
 
         case targetType.SINGLE_ENEMY: {
+            if(combatState.enemies[action.targets[0]]===undefined){
+                console.log("12")
+                return []
+            }
             if(isActorAlive(combatState.enemies[action.targets[0]])) {
+                console.log("13")
                 return [action.targets[0]]
             }
+            console.log("14")
                 return []
             }
 
@@ -191,13 +214,20 @@ function findEntityOwner(combatState: CombatState, entityId: number): Actor | un
 
 
 function applyDamage(combatState: CombatState, card: Card, targetIds: number[],action:Action): CombatState["enemies"] {
-  const newEnemies = { ...combatState.enemies }
-  const player=combatState.players[action.ownerId]
+  if(action.type!="playCard"){return combatState.enemies}
+    const newEnemies = { ...combatState.enemies }
+    const {physDmgAdd,physDmgMultiplicative,magDmgMultiplicative,magDmgAdd}=preCompDmg(combatState.players[action.ownerId])
+    const entity=combatState.players[action.ownerId].team.find((ent)=>ent.id===action.entityId)
+    console.log("efrer")
+    if(entity===undefined){return combatState.enemies}
+    console.log("23333333333333")
   for (const ep of Object.values(combatState.enemies)) {
     //const isHit = ep.team.some((e) => targetIds.includes(e.id))
     if (targetIds.includes(ep.id)) {
-      const physDmg = Math.max(0, ((card.dmg+player.additiveATKBuff)*player.multiplicativeATKBuff) - ep.combinedDEF)
-      const magDmg = Math.max(0, ((card.magDmg+player.additiveMagATKBuff)*player.multiplicativeMagATKBuff) - ep.combinedMagDEF)
+        console.log("JWNEFWEFWE")
+        const {physDefAdd,physDefMult,magDefAdd,magDefMult}=preCompDef(ep)
+      const physDmg = Math.max(0, ((card.dmg+entity.atk+physDmgAdd)*physDmgMultiplicative) - (ep.combinedDEF+physDefAdd)*physDefMult)
+      const magDmg = Math.max(0, ((card.magDmg+entity.magAtk+magDmgAdd)*magDmgMultiplicative) - (ep.combinedMagDEF+magDefAdd)*magDefMult)
       const newHp = Math.max(0, ep.currHp - physDmg - magDmg)
       newEnemies[ep.id]={...ep, currHp: newHp }
     }
@@ -206,6 +236,32 @@ function applyDamage(combatState: CombatState, card: Card, targetIds: number[],a
 }
 
 
+function preCompDmg(actor:Actor){
+    const physDmgAdd=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DMG_ADD).reduce((sum,a)=>sum+a.amount,0)
+    const physDmgMultiplicative=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DMG_MULT).reduce((prod,a)=>prod*a.amount,1)
+    const magDmgMultiplicative=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DMG_MULT).reduce((prod,a)=>prod*a.amount,1)
+    const magDmgAdd=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DMG_ADD).reduce((sum,a)=>sum+a.amount,0)
+    return {
+        physDmgAdd:physDmgAdd,
+        physDmgMultiplicative:physDmgMultiplicative,
+        magDmgMultiplicative:magDmgMultiplicative,
+        magDmgAdd:magDmgAdd
+    }
+}
+
+
+function preCompDef(actor:Actor){
+    const physDefAdd=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DEF_ADD).reduce((sum,a)=>sum+a.amount,0)
+    const physDefMult=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DEF_MULT).reduce((sum,a)=>sum+a.amount,0)
+    const magDefAdd=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DEF_ADD).reduce((sum,a)=>sum+a.amount,0)
+    const magDefMult=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DEF_MULT).reduce((sum,a)=>sum+a.amount,0)
+    return {
+        physDefAdd:physDefAdd,
+        physDefMult:physDefMult,
+        magDefAdd:magDefAdd,
+        magDefMult:magDefMult,
+    }
+}
 
 
 //((card.dmg)+(combatState.players.additiveATK))

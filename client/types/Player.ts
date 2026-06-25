@@ -15,10 +15,6 @@ type Actor = {
   statuses: Record<statusEffect, number> | null
   combinedDEF: number
   combinedMagDEF: number
-  additiveATKBuff: number
-  multiplicativeATKBuff: number
-  additiveMagATKBuff: number
-  multiplicativeMagATKBuff: number
   buffEffects: buff[]
 }
 

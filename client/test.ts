@@ -79,10 +79,6 @@ const player1: Player={
   handLimit: 5,
     combinedDEF:0,
   combinedMagDEF:0,
-    additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:0,
-  multiplicativeMagATKBuff:0,
   buffEffects:[]
 }
 
@@ -105,10 +101,7 @@ const player2: Player={
   handLimit: 5,
     combinedDEF:0,
   combinedMagDEF:0,
-    additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:0,
-  multiplicativeMagATKBuff:0,
+
   buffEffects:[]
 }
 
@@ -129,10 +122,7 @@ const enemy1: EnemyPlayer={
   intent: Intent.Attack,
     combinedDEF:0,
   combinedMagDEF:0,
-    additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:0,
-  multiplicativeMagATKBuff:0,
+
   buffEffects:[]
 }
 
@@ -149,10 +139,7 @@ const enemy2: EnemyPlayer={
   intent: Intent.Defend,
     combinedDEF:0,
   combinedMagDEF:0,
-    additiveATKBuff:0,
-  additiveMagATKBuff:0,
-  multiplicativeATKBuff:0,
-  multiplicativeMagATKBuff:0,
+
   buffEffects:[]
 }
 
