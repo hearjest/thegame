@@ -28,7 +28,7 @@ const baseDeckPlayer:deck={
 }
 
 const baseDeckEnemy:deck={
-      hand: [getCardById(1),getCardById(1),getCardById(1),getCardById(1),getCardById(2),getCardById(2)],
+      hand: [getCardById(3),getCardById(3),getCardById(3),getCardById(3),getCardById(3),getCardById(3)],
   drawPile: [],
   discardPile: [],
 }
@@ -51,7 +51,7 @@ const player1: Player={
   maxAP: 3,
   coins: 50,
   items: [],
-  handLimit: 5,
+  handLimit: 9,
   combinedDEF:0,
   combinedMagDEF:0,
   position:0,
@@ -65,7 +65,7 @@ const enemy1: EnemyPlayer={
     makeEntity(1101, 1001, 0, 3, 5),
     makeEntity(1102, 1001, 1, 2, 4),
   ],
-  deck: { hand: [], drawPile: [], discardPile: [] },
+  deck: baseDeckEnemy,
   totalHp: 60,
   currHp: 60,
   statuses: [],

@@ -118,29 +118,35 @@ function rollSpeedHelper(char:Player|EnemyPlayer,rng:number):[number,number]{
 
 function drawAll(state:CombatState):CombatState{
   const newPlayer:Record<number,Player>={}
-  const newEnemy:Record<number,EnemyPlayer>={}
+  // const newEnemy:Record<number,EnemyPlayer>={}
+  let rng=state.rngState
+
   for(let player of Object.values(state.players)){
+    const res=draw(state,state.players[player.id].deck,state.players[player.id].handLimit,rng)
     newPlayer[player.id]={
       ...state.players[player.id],
-      deck:draw(state,state.players[player.id].deck,state.players[player.id].handLimit)
+      deck:res.newDeck
     }
+    rng=res.rng
   }
-  for(let enemy of Object.values(state.enemies)){
-    newEnemy[enemy.id]={
-      ...state.enemies[enemy.id],
-      deck:draw(state,state.enemies[enemy.id].deck,state.enemies[enemy.id].handLimit)
-    }
-  }
-  return {
+  // for(let enemy of Object.values(state.enemies)){
+  //   const res=draw(state,state.enemies[enemy.id].deck,state.enemies[enemy.id].handLimit,rng)
+  //   newEnemy[enemy.id]={
+  //     ...state.enemies[enemy.id],
+  //     deck:res.newDeck
+  //   }
+  //   rng=res.rng
+  // }
+  const newState={
     ...state,
     players:newPlayer,
-    enemies:newEnemy
+  rngState:rng
   }
+  return newState
 }
 
 
-function draw(state: CombatState,deck:deck,handLimit:number):deck {
-  let rng = state.rngState
+function draw(state: CombatState,deck:deck,handLimit:number,rng:number):{newDeck:deck,rng:number} {
   let drawPile = [...deck.drawPile]
   let discardPile = [...deck.discardPile]
   let hand = [...deck.hand]
@@ -159,7 +165,9 @@ function draw(state: CombatState,deck:deck,handLimit:number):deck {
   }
   const newDeck={drawPile,discardPile,hand}
 
-  return newDeck
+  return {newDeck:newDeck,
+    rng:rng
+  }
   
 }
 
