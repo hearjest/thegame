@@ -3,18 +3,55 @@ import type {CombatState} from "./types/CombatState"
 import {shuffle} from "./helper methods/Shuffle"
 import {nextInt} from "./helper methods/rng"
 import type {Player,EnemyPlayer,Actor} from "./types/Player"
+import {deck} from "./types/Card"
+import {Intent,cardType as CardType} from "./enums"
+import {cardDictionary} from "./cardLookUpDict"
+
+
+
+function refreshAP(state:CombatState):CombatState{
+  const newPlayer:Record<number,Player>={}
+  for(const pl of Object.values(state.players)){
+    newPlayer[pl.id]={
+      ...pl,
+      currAP:pl.maxAP
+    }
+  }
+  return {
+    ...state,
+    players:newPlayer
+  }
+}
+
+
+
+function expireStatuses(state:CombatState):CombatState{
+  const players=state.players
+  const enemies=state.enemies
+  const newPlayer:Record<number,Player>={}
+  const newEnemy:Record<number,EnemyPlayer>={}
+  for(let key of Object.values(players)){
+    let player=expireStatus(state,key) 
+    newPlayer[key.id]=player
+  }
+    for(let key of Object.values(enemies)){
+    const ep=expireStatus(state,key) 
+    newEnemy[key.id]=ep
+  }
+  return { ...state, 
+    players:newPlayer, 
+    enemies:newEnemy }
+}
+
+function expireStatus<T extends EnemyPlayer|Player>(state:CombatState,actor:T):T{
+  return {
+    ...actor,
+    statuses:actor.statuses.filter(status=>status.roundEnd>state.roundNum&&status.stacks>0)
+  }
+}
 
 
 function expireBuffs(state: CombatState): CombatState {
-
-  // const players = Object.fromEntries(
-  //   Object.entries(state.players).map(([id, p]) => [id, expire(p)])
-  // )
-  // const enemies = Object.fromEntries(
-  //   Object.entries(state.enemies).map(([id, e]) => [id, expire(e)])
-  // )
-
-
   const players=state.players
   const enemies=state.enemies
   const newPlayer:Record<number,Player>={}
@@ -27,10 +64,6 @@ function expireBuffs(state: CombatState): CombatState {
     const ep=expire(state,key) 
     newEnemy[key.id]=ep
   }
-
-
-
-
   return { ...state, 
     players:newPlayer, 
     enemies:newEnemy }
@@ -64,11 +97,9 @@ function rollSpeed(state:CombatState):CombatState{
       const diff=b[1]-a[1]
       return diff===0?b[0]-a[0]:diff
     })
-    const newTurnOrder=arr.map((a=>a[0]))
     return {
       ...state,
       rngState:rng,
-      turnOrder:newTurnOrder
     }
 }
 
@@ -85,13 +116,36 @@ function rollSpeedHelper(char:Player|EnemyPlayer,rng:number):[number,number]{
 }
 
 
-function draw(state: CombatState,playerId:number): CombatState {
-  let rng = state.rngState
-  let drawPile = [...state.players[playerId].deck.drawPile]
-  let discardPile = [...state.players[playerId].deck.discardPile]
-  let hand = [...state.players[playerId].deck.hand]
+function drawAll(state:CombatState):CombatState{
+  const newPlayer:Record<number,Player>={}
+  const newEnemy:Record<number,EnemyPlayer>={}
+  for(let player of Object.values(state.players)){
+    newPlayer[player.id]={
+      ...state.players[player.id],
+      deck:draw(state,state.players[player.id].deck,state.players[player.id].handLimit)
+    }
+  }
+  for(let enemy of Object.values(state.enemies)){
+    newEnemy[enemy.id]={
+      ...state.enemies[enemy.id],
+      deck:draw(state,state.enemies[enemy.id].deck,state.enemies[enemy.id].handLimit)
+    }
+  }
+  return {
+    ...state,
+    players:newPlayer,
+    enemies:newEnemy
+  }
+}
 
-  const drawCount = Math.min(state.handLimit - hand.length, 5)
+
+function draw(state: CombatState,deck:deck,handLimit:number):deck {
+  let rng = state.rngState
+  let drawPile = [...deck.drawPile]
+  let discardPile = [...deck.discardPile]
+  let hand = [...deck.hand]
+
+  const drawCount = Math.min(handLimit - hand.length, 5)
 
   for (let i = 0; i < drawCount; i++) {
     if (drawPile.length === 0) {
@@ -103,17 +157,58 @@ function draw(state: CombatState,playerId:number): CombatState {
     }
     hand.push(drawPile.pop()!)
   }
+  const newDeck={drawPile,discardPile,hand}
+
+  return newDeck
+  
+}
+
+function rollEnemyIntents(state:CombatState):CombatState{
+  let rng=state.rngState
+  const newEnemies={...state.enemies}
+  for(let enemy of Object.values(state.enemies)){
+    if(enemy.currHp<=0){continue}
+      const res=handleIntents(enemy,rng)
+      newEnemies[enemy.id]=res.newEnemy
+      rng=res.rng
+  }
 
 
   return {
     ...state,
-    rngState: rng,
-    players: {
-      ...state.players,                              
-      [playerId]:{ ...state.players[playerId],
-        deck:{drawPile,discardPile,hand},} 
-    },
+    enemies:newEnemies,
+    rngState:rng
   }
 }
 
-export {rollSpeed,draw}
+function handleIntents(enemy:EnemyPlayer,rng:number):{newEnemy:EnemyPlayer,rng:number}{
+  const deckLen=enemy.deck.hand.length
+  const newRng=nextInt(rng,0,deckLen-1)
+  const chosenCard=enemy.deck.hand[newRng.value]
+  rng=newRng.nextState
+  const newEnemy:EnemyPlayer={
+    ...enemy,
+    intent:cardTypeToIntent(chosenCard.cardType),
+    intentCardId:chosenCard.cardId,
+    roundNumUpdated:enemy.roundNumUpdated+1
+  }
+  return {
+    newEnemy,
+    rng
+  }
+}
+
+function cardTypeToIntent(type: CardType): Intent {
+  switch (type) {
+    case CardType.ATK:         {return Intent.Attack}
+    case CardType.GAIN_SHIELD:{ return Intent.Defend}
+    case CardType.HEAL:        {return Intent.Heal}
+    case CardType.BUFF:        {return Intent.Buff}
+    case CardType.DEBUFF:      {return Intent.Debuff}
+    default: return Intent.Unknown
+  }
+}
+
+
+
+export {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses}

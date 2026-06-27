@@ -2,6 +2,9 @@ import {targetSide,statusEffect,targetType,cardType,buffType} from "../enums"
 
 // enum conditionals
 
+
+
+
 type Card={
     name:string
     cardType:cardType
@@ -20,6 +23,7 @@ type Card={
         buffAmount:number
     buffDuration:number
     buffType:buffType
+    belongsToEntityId:number
 }
 
 type deck={

@@ -2,6 +2,10 @@ enum Intent{
     Attack,
     Defend,
     Unknown,
+    Heal,
+    Buff,
+    Debuff
+
 }
 
 enum statusEffect{

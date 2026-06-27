@@ -6,7 +6,12 @@ enum Phase{
     TURN_END,
     WON,
     LOSS,
-    RESOLVE
+    RESOLVE,
+    PLAYER_PHASE,
+    ENEMY_PHASE,
+    PLAYER_TURN_END,
+    ENEMY_TURN_END,
+    PLAYERS_ALL_END
 }
 
 
@@ -14,18 +19,12 @@ enum Phase{
 
 type CombatState={
     players:Record<number,Player>
-    //enemies:Record<number,Entity>
     enemies:Record<number,EnemyPlayer>
     phase:Phase
     roundNum:number
-    // drawPile:Card[]
-    // // discardPile:Card[]
-    // hand:Card[]
-    handLimit:number
-    turnOrder:number[]
-    turnOrderIndex:number
     seed:number
     rngState:number
+    playersEndedTurn:number[]
 }
 
 
@@ -61,7 +60,9 @@ function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
 
 
 
-
+// function enemyTurn(state:CombatState):CombatState{
+//     const enemyArr=Object.values(state.enemies).sort((en)=>en.)
+// }
 
 
 

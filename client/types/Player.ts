@@ -1,9 +1,9 @@
 import type {Entity} from "../EntityInterface"
 import type {Card,deck} from "./Card"
-import {Intent,buffType} from "../enums"
+import {Intent,buffType,cardType} from "../enums"
 import type {statusEffect} from "../enums"
 import type {buff} from "./BuffDebuff"
-
+import {status} from "./StatusEffect"
 
 type Actor = {
   id: number
@@ -11,11 +11,13 @@ type Actor = {
   deck: deck
   totalHp: number
   currHp: number
-  rolledSpeed: number
-  statuses: Record<statusEffect, number> | null
+  statuses: status[]
   combinedDEF: number
   combinedMagDEF: number
   buffEffects: buff[]
+  position:number
+  roundNumUpdated:number
+  handLimit:number
 }
 
 
@@ -33,6 +35,7 @@ type Player=Actor&{
 
 type EnemyPlayer=Actor&{
     intent:Intent
+    intentCardId:number
 }
 
 

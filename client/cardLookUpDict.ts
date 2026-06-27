@@ -18,6 +18,7 @@ const ability1:Card={
           buffAmount:0,
     buffDuration:0,
     buffType:0,
+    belongsToEntityId:1
 }
 
 const ability2:Card={
@@ -38,6 +39,7 @@ const ability2:Card={
           buffAmount:2,
     buffDuration:3,
     buffType:buffType.PHYS_DMG_MULT,
+    belongsToEntityId:1
 }
 
 const cardDictionary:Record<number,Card>={
@@ -45,7 +47,9 @@ const cardDictionary:Record<number,Card>={
     2:ability2,
 }
 
+function getCardById(id:number):Card{
+    return cardDictionary[id]
+}
 
-
-export {cardDictionary,targetSide}
+export {cardDictionary,targetSide,getCardById}
 

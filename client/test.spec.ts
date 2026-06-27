@@ -44,6 +44,7 @@ const ability2:Card={
           buffAmount:2,
     buffDuration:3,
     buffType:buffType.PHYS_DMG_MULT,
+    belongsToEntityId:101
 }
 
 
@@ -65,6 +66,7 @@ const strike: Card={
       buffAmount:0,
     buffDuration:0,
     buffType:0,
+    belongsToEntityId:1
 }
 
 const baseDeck: deck={
@@ -84,7 +86,7 @@ const player1: Player={
   totalHp: 90,
   currHp: 90,
   rolledSpeed: -1,
-  statuses: null,
+  statuses: [],
   currAP: 3,
   maxAP: 3,
   coins: 50,
@@ -92,8 +94,9 @@ const player1: Player={
   handLimit: 5,
   combinedDEF:0,
   combinedMagDEF:0,
-
-  buffEffects:[]
+  position:0,
+  buffEffects:[],
+  roundNumUpdated:0,
 }
 
 const enemy1: EnemyPlayer={
@@ -105,25 +108,25 @@ const enemy1: EnemyPlayer={
   deck: { hand: [], drawPile: [], discardPile: [] },
   totalHp: 60,
   currHp: 60,
-  rolledSpeed: -1,
-  statuses: null,
+  statuses: [],
   intent: Intent.Attack,
   combinedDEF:0,
   combinedMagDEF:0,
-
-  buffEffects:[]
+  position:0,
+  buffEffects:[],
+  roundNumUpdated:0,
+  intentCardId:-1,
+  handLimit:99
 }
 
 const state: CombatState={
   players: { 1: player1 },
   enemies: { 1001: enemy1 },
-  phase: Phase.ROUND_START,
+  phase: Phase.PLAYER_PHASE,
   roundNum: 1,
-  handLimit: 5,
-  turnOrder: [1],
-  turnOrderIndex: 0,
   seed: 42,
   rngState: 42,
+  playersEndedTurn:[]
 }
 
 describe("playCard damage", () => {
@@ -214,3 +217,6 @@ describe("playCard damage", () => {
 
 
 })
+
+
+export {makeEntity,player1,enemy1}
