@@ -435,5 +435,17 @@ function tickStatusEffects<T extends Record<number,EnemyPlayer>|Record<number,Pl
 
 
 
+
+function checkPlayerTurnEnd(state:CombatState):boolean{
+    let allPlayersEnded=true
+    for(let player of Object.values(state.players)){
+        if(!(player.id in state.playersEndedTurn)){
+            allPlayersEnded=false
+        }
+    }
+    return allPlayersEnded
+}
+
+
 export {applyAction,rollEnemyIntents,playEnemyTurn,checkWinLoss,tickStatusEffects}
 

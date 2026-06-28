@@ -4,6 +4,7 @@ type Action=
 | {type:"useItem"; ownerId:number; itemId:number;targets:number[]}
 | {type:"reposition"; ownerId:number;entityId:number;positionNum:number}
 | {type:"endTurn"; ownerId:number}
+| {type:"begin";}
 
 
 export type {Action}

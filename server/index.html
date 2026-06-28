@@ -41,6 +41,10 @@
     <button onclick="endTurn()">End Turn</button>
   </div>
 
+  <div>
+    <button onClick="begin()">Begin</button>
+  </div>
+
   <div id="log"></div>
 
 <script>
@@ -50,17 +54,18 @@
 
   let state = null;
   let selectedEnemyId = null;
-  const MY_PLAYER_ID = 1;  
+  // const MY_PLAYER_ID = 1;
 
-  const socket = new WebSocket("ws://localhost:8080");
+  const socket = new WebSocket("ws://192.168.1.249:8080");
 
   socket.onopen = () => log("connected");
   socket.onclose = () => log("disconnected");
   socket.onerror = (e) => log("ws error (is the server running?)");
-
+  let myplayerid=null
   socket.onmessage = (event) => {
     const msg = JSON.parse(event.data);
     if (msg.type === "error") { log("server error: " + msg.message); return; }
+    if(msg.type==="assigned"){myplayerid=msg.playerId; return;}
     if (msg.type === "state") {
       state = msg.state;
       render();
@@ -73,11 +78,11 @@
 
   function playCard(card) {
     if (selectedEnemyId === null) { log("select an enemy first"); return; }
-    const me = state.players[MY_PLAYER_ID];
+    const me = state.players[myplayerid];
     if (me.currAP < card.APCost) { log("not enough AP"); return; }
     send({
       type: "playCard",
-      ownerId: MY_PLAYER_ID,
+      ownerId: myplayerid,
       cardId: card.cardId,
       cardSerialNumber: card.cardSerialNumber,
       targets: [selectedEnemyId],
@@ -85,8 +90,12 @@
     });
   }
 
+  function begin(){
+    send({type:"begin"});
+  }
+
   function endTurn() {
-    send({ type: "endTurn", ownerId: MY_PLAYER_ID });
+    send({ type: "endTurn", ownerId: myplayerid });
   }
 
   function selectEnemy(id) {
@@ -130,7 +139,7 @@
 
     const handEl = document.getElementById("hand");
     handEl.innerHTML = "";
-    const me = state.players[MY_PLAYER_ID];
+    const me = state.players[myplayerid];
     if (me) {
       for (const card of me.deck.hand) {
         const div = document.createElement("div");

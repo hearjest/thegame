@@ -5,8 +5,8 @@ import {targetSide,targetType,cardType,buffType,Intent} from "./enums"
 import {Entity} from "./EntityInterface"
 import type {Action} from "./types/Action"
 import {applyAction,playEnemyTurn,checkWinLoss,tickStatusEffects} from "./CombatScene"
-import {cardDictionary} from "./cardLookUpDict"
-import {players,enemies} from "./DummyGameTest/playersDummy"
+import {cardDictionary,getCardById} from "./cardLookUpDict"
+import {players,enemies, makeEntity} from "./DummyGameTest/playersDummy"
 import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStart"
 
 const state=initState(players,enemies)
@@ -130,10 +130,49 @@ function initState(players:Player[],enemies:EnemyPlayer[]):CombatState{
 
 
 
+function initPlayer(state:CombatState,id:number):CombatState{
+    const newPlayers={
+        ...state.players
+    }
+    newPlayers[id]=makePlayer(id)
+    return{
+        ...state,
+        players:newPlayers
+    }
+}
 
 
-
-
+function makePlayer(id:number):Player{
+    const baseDeckPlayer:deck={
+      hand: [getCardById(1),getCardById(1),getCardById(1),getCardById(1),getCardById(2),getCardById(2)],
+        drawPile: [],
+        discardPile: [],
+    }
+    const player2: Player={
+        id: id,
+        team: [
+            makeEntity(101, 1, 0, 2, 4),
+            makeEntity(102, 1, 1, 3, 5),
+            makeEntity(103, 1, 2, 1, 3),
+        ],
+        deck: baseDeckPlayer,
+        totalHp: 90,
+        currHp: 90,
+        rolledSpeed: -1,
+        statuses: [],
+        currAP: 3,
+        maxAP: 3,
+        coins: 50,
+        items: [],
+        handLimit: 9,
+        combinedDEF:0,
+        combinedMagDEF:0,
+        position:0,
+        buffEffects:[],
+        roundNumUpdated:0
+    }
+    return player2
+}
 
 
 
@@ -209,4 +248,4 @@ function displayState(state: any): void {
   console.log("========================================================\n")
 }
 
-export { displayState,advance ,initState}
+export { displayState,advance ,initState,initPlayer}

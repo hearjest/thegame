@@ -5,7 +5,7 @@ import {cardDictionary,getCardById} from "../cardLookUpDict"
 import {Player,EnemyPlayer,Actor} from "../types/Player"
 import { targetSide, targetType, Intent ,cardType,buffType} from "../enums"
 
-function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
+export function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
   return {
     id,
     playerId,
@@ -21,7 +21,7 @@ function makeEntity(id: number, playerId: number, position: number, minSpeed: nu
   }
 }
 
-const baseDeckPlayer:deck={
+export const baseDeckPlayer:deck={
       hand: [getCardById(1),getCardById(1),getCardById(1),getCardById(1),getCardById(2),getCardById(2)],
   drawPile: [],
   discardPile: [],
@@ -77,6 +77,31 @@ const enemy1: EnemyPlayer={
   roundNumUpdated:0,
   handLimit:99,
   intentCardId:-1
+}
+
+
+const player2: Player={
+  id: 2,
+  team: [
+    makeEntity(101, 1, 0, 2, 4),
+    makeEntity(102, 1, 1, 3, 5),
+    makeEntity(103, 1, 2, 1, 3),
+  ],
+  deck: baseDeckPlayer,
+  totalHp: 90,
+  currHp: 90,
+  rolledSpeed: -1,
+  statuses: [],
+  currAP: 3,
+  maxAP: 3,
+  coins: 50,
+  items: [],
+  handLimit: 9,
+  combinedDEF:0,
+  combinedMagDEF:0,
+  position:0,
+  buffEffects:[],
+  roundNumUpdated:0
 }
 
 const players=[player1]
