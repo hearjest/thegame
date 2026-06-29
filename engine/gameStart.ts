@@ -1,13 +1,15 @@
 import {Player,EnemyPlayer,Actor} from "./types/Player"
 import {CombatState,Phase} from "./types/CombatState"
 import {Card,deck} from "./types/Card"
-import {targetSide,targetType,cardType,buffType,Intent} from "./enums"
-import {Entity} from "./EntityInterface"
+import {targetSide,targetType,cardType,buffType,Intent} from "./types/enums"
+import {Entity} from "./types/EntityInterface"
 import type {Action} from "./types/Action"
 import {applyAction,playEnemyTurn,checkWinLoss,tickStatusEffects} from "./CombatScene"
 import {cardDictionary,getCardById} from "./cardLookUpDict"
 import {players,enemies, makeEntity} from "./DummyGameTest/playersDummy"
-import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStart"
+import {getHeathenKnight} from "./DummyGameTest/HeathenKnight"
+import {getEldritch} from "./DummyGameTest/Eldritch"
+import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStartEnd"
 
 const state=initState(players,enemies)
 let s=advance(state)
@@ -35,14 +37,14 @@ function advance(state:CombatState):CombatState{
             case Phase.PLAYER_PHASE:{
                 //if not player turn return
                 console.log("--------------------PLAYER_PHASE------------------------")
-                    const action: Action={
-                        type: "playCard",
-                        ownerId: 1,
-                        cardId: 1,
-                        cardSerialNumber: 2,
-                        targets: [1001],
-                        entityId:101
-                    }
+                    // const action: Action={
+                    //     type: "playCard",
+                    //     ownerId: 1,
+                    //     cardId: 1,
+                    //     cardSerialNumber: 2,
+                    //     targets: [1001],
+                    //     entityId:101
+                    // }
                 //currState=applyAction(currState,action)
                 //for testing, manually set end turn
                 currState={
@@ -63,7 +65,6 @@ function advance(state:CombatState):CombatState{
             }
             case Phase.PLAYER_TURN_END:{
                 console.log("--------------------PLAYER_TURN_END------------------------")
-                //activate negative statuses
                 currState={
                     ...currState,
                     players:tickStatusEffects(currState.players) as Record<number,Player>,
@@ -72,7 +73,6 @@ function advance(state:CombatState):CombatState{
                 continue
             }
             case Phase.ENEMY_TURN_END:{
-                //activate negative statuses
                 console.log("--------------------ENEMY_TURN_END------------------------")
                 currState={
                     ...currState,
@@ -142,18 +142,31 @@ function initPlayer(state:CombatState,id:number):CombatState{
 }
 
 
-function makePlayer(id:number):Player{
-    const baseDeckPlayer:deck={
-      hand: [getCardById(1),getCardById(1),getCardById(1),getCardById(1),getCardById(2),getCardById(2)],
-        drawPile: [],
-        discardPile: [],
+function playerDisconnected(state:CombatState,id:number):CombatState{
+    let newPlayers={...state.players}
+    newPlayers=Object.values(newPlayers).filter((pl)=>pl.id!==id)
+
+    return {
+        ...state,
+        players:newPlayers
     }
+}
+
+
+function makePlayer(id:number):Player{
+    const {eldritch,eldritchDeck}=getEldritch(id)
+    const {heathenknight,heathenknightDeck}=getHeathenKnight(id)
+        const baseDeckPlayer:deck={
+            hand: [],
+                drawPile: [],
+                discardPile: [...eldritchDeck.drawPile,...heathenknightDeck.drawPile],
+        }
+
     const player2: Player={
         id: id,
         team: [
-            makeEntity(101, 1, 0, 2, 4),
-            makeEntity(102, 1, 1, 3, 5),
-            makeEntity(103, 1, 2, 1, 3),
+            eldritch,
+            heathenknight
         ],
         deck: baseDeckPlayer,
         totalHp: 90,
@@ -179,12 +192,6 @@ function makePlayer(id:number):Player{
 
 
 
-
-
-
-// Drop this into gameStart.ts (or a separate file and import it).
-// Pure, read-only: it never mutates state. Reads fields off CombatState/Player/EnemyPlayer.
-
 function hpBar(curr: number, total: number, width = 20): string {
   const ratio = total > 0 ? Math.max(0, curr) / total : 0
   const filled = Math.round(ratio * width)
@@ -192,7 +199,6 @@ function hpBar(curr: number, total: number, width = 20): string {
 }
 
 function phaseName(phase: number): string {
-  // mirror your Phase enum order
   return ["ROUND_START","ENTITY_TURN","TURN_END","WON","LOSS","RESOLVE",
           "PLAYER_PHASE","ENEMY_PHASE","PLAYER_TURN_END","ENEMY_TURN_END","PLAYERS_ALL_END"][phase] ?? `?${phase}`
 }
@@ -206,7 +212,7 @@ function statusName(type: number): string {
 }
 
 function fmtStatuses(statuses: { type: number; stacks: number }[]): string {
-  if (!statuses || statuses.length === 0) return ""
+    if (!Array.isArray(statuses) || statuses.length === 0) return ""
   return " | " + statuses.map(s => `${statusName(s.type)} x${s.stacks}`).join(", ")
 }
 
@@ -216,7 +222,6 @@ function displayState(state: any): void {
   console.log(`players ended turn: [${state.playersEndedTurn.join(", ")}]`)
   console.log("========================================================")
 
-  // ----- ENEMIES -----
   console.log("\n--- ENEMIES ---")
   for (const e of Object.values(state.enemies) as any[]) {
     const dead = e.currHp <= 0 ? "  (DEAD)" : ""
@@ -226,14 +231,13 @@ function displayState(state: any): void {
                 fmtStatuses(e.statuses))
   }
 
-  // ----- PLAYERS -----
+
   console.log("\n--- PLAYERS ---")
   for (const p of Object.values(state.players) as any[]) {
     const dead = p.currHp <= 0 ? "  (DEAD)" : ""
     console.log(`  Player ${p.id}${dead}  ${hpBar(p.currHp, p.totalHp)} ${p.currHp}/${p.totalHp}` +
                 `  AP ${p.currAP}/${p.maxAP}  DEF ${p.combinedDEF}/${p.combinedMagDEF}` +
                 fmtStatuses(p.statuses))
-    // hand
     const hand = p.deck.hand as any[]
     if (hand.length === 0) {
       console.log(`      hand: (empty)`)
@@ -248,4 +252,4 @@ function displayState(state: any): void {
   console.log("========================================================\n")
 }
 
-export { displayState,advance ,initState,initPlayer}
+export { displayState,advance ,initState,initPlayer,playerDisconnected}

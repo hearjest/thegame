@@ -1,12 +1,12 @@
-import { rollSpeed, draw } from "./RoundStart"
+import { rollSpeed, draw } from "../RoundStartEnd"
 
-import type { Card, deck } from "./types/Card"
-import type { Entity } from "./EntityInterface"
-import type { Player, EnemyPlayer } from "./types/Player"
-import { targetSide, targetType ,cardType} from "./enums"
-import {applyAction} from "./CombatScene"
-import type { CombatState } from "./types/CombatState"
-import { Phase } from "./types/CombatState"
+import type { Card, deck } from "../types/Card"
+import type { Entity } from "../types/EntityInterface"
+import type { Player, EnemyPlayer } from "../types/Player"
+import { targetSide, targetType ,cardType} from "../types/enums"
+import {applyAction} from "../CombatScene"
+import type { CombatState } from "../types/CombatState"
+import { Phase } from "../types/CombatState"
 // ---- helper to stamp out a character/enemy entity without repeating every field ----
 function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
   return {
@@ -93,7 +93,7 @@ const player2: Player={
   totalHp: 90,
   currHp: 90,
   rolledSpeed: -1,
-  statuses: null,
+  statuses: [],
   currAP: 3,
   maxAP: 3,
   coins: 50,
@@ -106,7 +106,7 @@ const player2: Player={
 }
 
 // ---- two enemy-players, each with their own team of enemies ----
-import { Intent } from "./enums"
+import { Intent } from "../types/enums"
 
 const enemy1: EnemyPlayer={
   id: 1001,
@@ -117,12 +117,13 @@ const enemy1: EnemyPlayer={
   deck: { hand: [], drawPile: [], discardPile: [] },
   totalHp: 60,
   currHp: 60,
-  rolledSpeed: -1,
-  statuses: null,
+  statuses: [],
   intent: Intent.Attack,
     combinedDEF:0,
   combinedMagDEF:0,
-
+  position:0,
+  roundNumUpdated:0,
+  handLimit:99,
   buffEffects:[]
 }
 
@@ -134,12 +135,14 @@ const enemy2: EnemyPlayer={
   deck: { hand: [], drawPile: [], discardPile: [] },
   totalHp: 30,
   currHp: 30,
-  rolledSpeed: -1,
-  statuses: null,
+  position:0,
+  roundNumUpdated:0,
+  handLimit:99,
   intent: Intent.Defend,
+  intentCardId:-1,
     combinedDEF:0,
   combinedMagDEF:0,
-
+  statuses:[],
   buffEffects:[]
 }
 
@@ -149,11 +152,9 @@ const state: CombatState={
   enemies: { 1001: enemy1, 1002: enemy2 },
   phase: Phase.ROUND_START,
   roundNum: 1,
-  handLimit: 5,
-  turnOrder: [],
-  turnOrderIndex: 0,
   seed: 42,
   rngState: 42,
+  playersEndedTurn:[]
 }
 
 
@@ -162,7 +163,7 @@ const afterSpeed=rollSpeed(state)
 console.log("turnOrder:", afterSpeed.turnOrder)
 console.log("rngState advanced:", afterSpeed.rngState !== state.rngState)
 console.log(state.players[1].deck)
-const afterDraw=draw(afterSpeed, 1)
+const afterDraw=draw(afterSpeed, 1,5)
 console.log(afterDraw.players[1].deck)
 console.log("player 1 hand size:", afterDraw.players[1].deck.hand.length)
 console.log("input unmutated:", state.turnOrder.length === 0 && state.rngState === 42)

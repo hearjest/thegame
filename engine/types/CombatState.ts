@@ -29,34 +29,34 @@ type CombatState={
 
 
 
-function addCoins(state:CombatState,playerId:number,amount:number):CombatState{
-    let player=state.players[playerId]
-    return {
-        ...state,
-        players:{
-            ...state.players,
-            [playerId]:{
-                ...state.players[playerId],
-                coins:player.coins+amount
-            }
-        }
-    }
-}
+// function addCoins(state:CombatState,playerId:number,amount:number):CombatState{
+//     let player=state.players[playerId]
+//     return {
+//         ...state,
+//         players:{
+//             ...state.players,
+//             [playerId]:{
+//                 ...state.players[playerId],
+//                 coins:player.coins+amount
+//             }
+//         }
+//     }
+// }
 
 
-function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
-    let player=state.players[playerId]
-    return {
-        ...state,
-        players:{
-            ...state.players,
-            [playerId]:{
-                ...state.players[playerId],
-                currAP:Math.min(player.maxAP,player.currAP+amount)
-            }
-        }
-    }
-}
+// function spendAP(state:CombatState,playerId:number,amount:number):CombatState{
+//     let player=state.players[playerId]
+//     return {
+//         ...state,
+//         players:{
+//             ...state.players,
+//             [playerId]:{
+//                 ...state.players[playerId],
+//                 currAP:Math.min(player.maxAP,player.currAP+amount)
+//             }
+//         }
+//     }
+// }
 
 
 

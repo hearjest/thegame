@@ -1,9 +1,9 @@
 
-import {Entity} from "../EntityInterface"
+import {Entity} from "../types/EntityInterface"
 import {Card,deck} from "../types/Card"
 import {cardDictionary,getCardById} from "../cardLookUpDict"
 import {Player,EnemyPlayer,Actor} from "../types/Player"
-import { targetSide, targetType, Intent ,cardType,buffType} from "../enums"
+import { targetSide, targetType, Intent ,cardType,buffType} from "../types/enums"
 
 export function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
   return {

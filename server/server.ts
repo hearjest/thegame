@@ -4,7 +4,7 @@ import type { CombatState } from '../engine/types/CombatState'
 import type { Action } from '../engine/types/Action'
 import { applyAction } from '../engine/CombatScene'
 import { players, enemies } from '../engine/DummyGameTest/playersDummy'
-import { advance, initState ,initPlayer} from '../engine/gameStart'  
+import { advance, initState ,initPlayer,playerDisconnected} from '../engine/gameStart'  
 
 
 let playerIdCounter=0  
@@ -23,11 +23,6 @@ wss.on('connection', (socket) => {
     
     state=initPlayer(state,playerIdCounter)
 
-
-    
-
-
-
     sendToAllPlayers(state)
     playerIdCounter+=1
     socket.on('message', (raw) => {
@@ -39,6 +34,7 @@ wss.on('connection', (socket) => {
             return
         }
         if(action.type==="playCard"&&action.ownerId!==connectionsPlayers.get(socket)){
+            console.log(action)
             console.log("action id",action.ownerId)
             console.log("socket id",connectionsPlayers.get(socket))
             socket.send(JSON.stringify({ type: 'error', message: 'not your player' }))
@@ -56,7 +52,11 @@ wss.on('connection', (socket) => {
         //socket.send(JSON.stringify({ type: 'state', state }))
         sendToAllPlayers(state)
     })
-    socket.on('close', () => console.log('client disconnected'))
+    socket.on('close', () => {
+        console.log('client disconnected')
+        state=playerDisconnected(state,connectionsPlayers.get(socket))
+        sendToAllPlayers(state)
+    })
     socket.on('error', (err) => console.error('socket error:', err))
     
 })

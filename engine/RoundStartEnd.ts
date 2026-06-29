@@ -1,10 +1,10 @@
-import type {Entity} from "./EntityInterface"
+import type {Entity} from "./types/EntityInterface"
 import type {CombatState} from "./types/CombatState"
 import {shuffle} from "./helper methods/Shuffle"
 import {nextInt} from "./helper methods/rng"
 import type {Player,EnemyPlayer,Actor} from "./types/Player"
 import {deck} from "./types/Card"
-import {Intent,cardType as CardType} from "./enums"
+import {Intent,cardType as CardType} from "./types/enums"
 import {cardDictionary} from "./cardLookUpDict"
 
 

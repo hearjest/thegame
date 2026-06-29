@@ -1,0 +1,107 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+    font-family: monospace;
+    background:#2b2c2e;
+    color: white;
+    position: relative;
+}
+
+.navbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    display: flex; align-items: center; gap: 24px; padding: 0 18px;
+    background: black
+    border-bottom: 2px solid #3a4456; z-index: 50;
+}
+.nav-hp { display: flex; align-items: center; gap: 8px; font-size: 18px; }
+.nav-hp .heart { color: #e0556a; font-size: 20px; }
+.nav-hp .bar { width: 160px; height: 14px; background: #2a2f3a; border-radius: 7px; overflow: hidden; border: 1px solid #444; }
+.nav-hp .fill { height: 100%; background: red; }
+.nav-meta { margin-left: auto; font-size: 13px; color: #9aa4b4; text-align: right; }
+.nav-meta b { color: #e8c46a; }
+
+.battlefield {
+    position: absolute; top: 52px; bottom: 190px; left: 0; right: 0;
+    padding: 24px 32px; overflow-y: auto;
+}
+.field-label { font-size: 11px; letter-spacing: 2px; color: #6b7689; text-transform: uppercase; margin: 4px 0 8px; }
+
+.enemy-row { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin-bottom: 36px; }
+.player-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+.actor {
+    width: 200px; padding: 12px; border-radius: 8px;
+    background: rgba(20,26,36,0.7); border: 1px solid #3a4456;
+    backdrop-filter: blur(2px);
+}
+.enemy { border-color: #7a3a44; }
+.enemy.selected { outline: 3px solid #f0a020; outline-offset: 2px; }
+.enemy.targetable { cursor: pointer; }
+.enemy.targetable:hover { border-color: #f0a020; }
+.player { border-color: #3a7a4a; }
+.player.me { border-color: #000000; box-shadow: 0 0 12px rgba(90,208,122,0.25); }
+.dead { opacity: 0.35; filter: grayscale(1); }
+
+.actor .name { font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.actor .tag { font-size: 10px; color: #5ad07a; }
+.hpbar { background: #2a2f3a; height: 16px; border-radius: 8px; overflow: hidden; margin: 4px 0; border: 1px solid #444; }
+.hpfill { height: 100%; background: green; }
+.enemy .hpfill { background: red; }
+.hptext { font-size: 12px; text-align: center; margin-top: -16px; position: relative; color: #fff; text-shadow: 0 1px 2px #000; }
+.intent { margin-top: 8px; font-size: 13px; color: #f0a020; }
+.small { font-size: 11px; color: #8a94a4; margin-top: 4px; }
+
+.ap {
+    position: fixed; left: 26px; bottom: 56px; z-index: 40;
+    width: 76px; height: 76px; transform: rotate(45deg);
+    background: darkgreen;
+    display: flex; align-items: center; justify-content: center;
+}
+.ap span { transform: rotate(-45deg); font-size: 22px; font-weight: bold; color: #06200f; }
+
+.hand {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 180px;
+    display: flex; align-items: flex-end; justify-content: center; gap: -10px;
+    padding-bottom: 14px; z-index: 30; pointer-events: none;
+}
+.card {
+    pointer-events: auto;
+    width: 130px; height: 170px; margin: 0 -8px;
+    background: #1c222c;
+    border: 2px solid #5a6678; border-radius: 10px;
+    padding: 10px; cursor: pointer; transition: transform 0.12s, margin 0.12s;
+    display: flex; flex-direction: column;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+}
+.card:hover { transform: translateY(-28px) scale(1.05); margin: 0 4px; border-color: #f0c040; z-index: 5; }
+.card.unplayable { opacity: 0.45; cursor: not-allowed; }
+.card.unplayable:hover { transform: none; margin: 0 -8px; border-color: #5a6678; }
+.card .cost {
+    position: absolute; width: 26px; height: 26px; margin: -16px 0 0 -16px;
+    background: green; border: 2px solid #7af0a0;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: #06200f; font-size: 13px;
+}
+.card .cardname { font-weight: bold; font-size: 13px; margin: 6px 0; text-align: center; color: #f0e0b0; }
+.card .cardtype { font-size: 10px; color: #8a94a4; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+.card .carddmg { margin-top: auto; text-align: center; font-size: 13px; color: #e08060; }
+
+.endturn {
+    position: fixed; right: 28px; bottom: 60px; z-index: 40;
+    padding: 16px 26px; font-family: monospace; font-size: 16px; font-weight: bold;
+    background: rgb(64, 72, 93); color: white;
+    border: 2px solid white; border-radius: 10px; cursor: pointer;
+}
+.endturn:hover { background: #b08a3a; }
+.begin {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 60;
+    padding: 18px 40px; font-size: 20px; font-weight: bold; font-family: monospace;
+    background: green; color: #06200f;
+    border: 2px solid #7af0a0; border-radius: 12px; cursor: pointer;
+}
+
+#log {
+    position: fixed; left: 120px; bottom: 8px; z-index: 35;
+    font-size: 11px; color: #7a8494; max-width: 40%; max-height: 70px; overflow: hidden;
+    white-space: pre-wrap; pointer-events: none;
+}

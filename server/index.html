@@ -3,163 +3,36 @@
 <head>
   <meta charset="utf-8">
   <title>thegame</title>
-  <style>
-    body { font-family: monospace; background: #1a1a1a; color: #ddd; padding: 16px; }
-    .row { display: flex; gap: 16px; flex-wrap: wrap; }
-    .actor { border: 1px solid #444; padding: 10px; margin: 6px; border-radius: 6px; min-width: 220px; }
-    .enemy { border-color: #844; }
-    .player { border-color: #484; }
-    .dead { opacity: 0.4; }
-    .hpbar { background: #333; height: 14px; border-radius: 3px; overflow: hidden; margin: 4px 0; }
-    .hpfill { background: #4a4; height: 100%; }
-    .enemy .hpfill { background: #a44; }
-    .card { display: inline-block; border: 1px solid #666; padding: 6px 10px; margin: 3px;
-            border-radius: 4px; cursor: pointer; background: #2a2a2a; }
-    .card:hover { background: #3a3a3a; border-color: #999; }
-    .card.unplayable { opacity: 0.4; cursor: not-allowed; }
-    button { font-family: monospace; padding: 6px 14px; margin: 4px; cursor: pointer;
-             background: #2a4; color: #000; border: none; border-radius: 4px; }
-    #phase { font-size: 18px; margin-bottom: 8px; }
-    #log { margin-top: 12px; color: #888; font-size: 12px; white-space: pre-wrap; }
-    .selected { outline: 2px solid #fa0; }
-  </style>
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <h2>thegame — local</h2>
-  <div id="phase">connecting…</div>
 
-  <h3>Enemies (click to target)</h3>
-  <div class="row" id="enemies"></div>
-
-  <h3>Your team</h3>
-  <div class="row" id="players"></div>
-
-  <h3>Hand (click a card to play it on the selected enemy)</h3>
-  <div id="hand"></div>
-
-  <div>
-    <button onclick="endTurn()">End Turn</button>
+  <div class="navbar">
+    <div class="nav-hp">
+      <span class="heart">&#10084;</span>
+      <span id="navHpText">--/--</span>
+      <div class="bar"><div class="fill" id="navHpFill" style="width:100%"></div></div>
+    </div>
+    <div class="nav-meta" id="navMeta">connecting…</div>
   </div>
 
-  <div>
-    <button onClick="begin()">Begin</button>
+  <div class="battlefield">
+    <div class="field-label">Enemies</div>
+    <div class="enemy-row" id="enemies"></div>
+    <div class="field-label">Your party</div>
+    <div class="player-row" id="players"></div>
   </div>
+
+  <div class="ap"><span id="apText">0/0</span></div>
+
+  <div class="hand" id="hand"></div>
+
+  <button class="endturn" onclick="endTurn()">End Turn</button>
+
+  <button class="begin" id="beginBtn" onclick="begin()">Begin</button>
 
   <div id="log"></div>
 
-<script>
-  const PHASE = ["ROUND_START","ENTITY_TURN","TURN_END","WON","LOSS","RESOLVE","PLAYER_PHASE","ENEMY_PHASE","PLAYER_TURN_END","ENEMY_TURN_END","PLAYERS_ALL_END"];
-  const INTENT = ["Attack","Defend","Unknown","Heal","Buff","Debuff"];
-  const CARDTYPE = ["BUFF","DEBUFF","ATK","HEAL","GAIN_SHIELD"];
-
-  let state = null;
-  let selectedEnemyId = null;
-  // const MY_PLAYER_ID = 1;
-
-  const socket = new WebSocket("ws://192.168.1.249:8080");
-
-  socket.onopen = () => log("connected");
-  socket.onclose = () => log("disconnected");
-  socket.onerror = (e) => log("ws error (is the server running?)");
-  let myplayerid=null
-  socket.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    if (msg.type === "error") { log("server error: " + msg.message); return; }
-    if(msg.type==="assigned"){myplayerid=msg.playerId; return;}
-    if (msg.type === "state") {
-      state = msg.state;
-      render();
-    }
-  };
-
-  function send(action) {
-    socket.send(JSON.stringify(action));
-  }
-
-  function playCard(card) {
-    if (selectedEnemyId === null) { log("select an enemy first"); return; }
-    const me = state.players[myplayerid];
-    if (me.currAP < card.APCost) { log("not enough AP"); return; }
-    send({
-      type: "playCard",
-      ownerId: myplayerid,
-      cardId: card.cardId,
-      cardSerialNumber: card.cardSerialNumber,
-      targets: [selectedEnemyId],
-      entityId: 101, 
-    });
-  }
-
-  function begin(){
-    send({type:"begin"});
-  }
-
-  function endTurn() {
-    send({ type: "endTurn", ownerId: myplayerid });
-  }
-
-  function selectEnemy(id) {
-    selectedEnemyId = id;
-    render();
-  }
-
-  function hpBar(curr, total) {
-    const pct = total > 0 ? Math.max(0, curr) / total * 100 : 0;
-    return `<div class="hpbar"><div class="hpfill" style="width:${pct}%"></div></div>`;
-  }
-
-  function render() {
-    if (!state) return;
-    document.getElementById("phase").textContent =
-      `ROUND ${state.roundNum}  —  ${PHASE[state.phase] ?? state.phase}`;
-
-    const enemiesEl = document.getElementById("enemies");
-    enemiesEl.innerHTML = "";
-    for (const e of Object.values(state.enemies)) {
-      const div = document.createElement("div");
-      div.className = "actor enemy" + (e.currHp <= 0 ? " dead" : "") +
-                      (e.id === selectedEnemyId ? " selected" : "");
-      div.innerHTML =
-        `<b>Enemy ${e.id}</b><br>${e.currHp}/${e.totalHp}${hpBar(e.currHp, e.totalHp)}` +
-        `intent: ${INTENT[e.intent] ?? e.intent}<br>DEF ${e.combinedDEF}/${e.combinedMagDEF}`;
-      if (e.currHp > 0) div.onclick = () => selectEnemy(e.id);
-      enemiesEl.appendChild(div);
-    }
-
-    const playersEl = document.getElementById("players");
-    playersEl.innerHTML = "";
-    for (const p of Object.values(state.players)) {
-      const div = document.createElement("div");
-      div.className = "actor player" + (p.currHp <= 0 ? " dead" : "");
-      div.innerHTML =
-        `<b>Player ${p.id}</b><br>${p.currHp}/${p.totalHp}${hpBar(p.currHp, p.totalHp)}` +
-        `AP ${p.currAP}/${p.maxAP}<br>DEF ${p.combinedDEF}/${p.combinedMagDEF}`;
-      playersEl.appendChild(div);
-    }
-
-    const handEl = document.getElementById("hand");
-    handEl.innerHTML = "";
-    const me = state.players[myplayerid];
-    if (me) {
-      for (const card of me.deck.hand) {
-        const div = document.createElement("div");
-        const unplayable = me.currAP < card.APCost;
-        div.className = "card" + (unplayable ? " unplayable" : "");
-        div.innerHTML = `<b>${card.name}</b><br>AP ${card.APCost}<br>` +
-                        `${CARDTYPE[card.cardType]} ${card.dmg}/${card.magDmg}`;
-        if (!unplayable) div.onclick = () => playCard(card);
-        handEl.appendChild(div);
-      }
-    }
-
-    if (PHASE[state.phase] === "WON") log("YOU WON");
-    if (PHASE[state.phase] === "LOSS") log("YOU LOST");
-  }
-
-  function log(msg) {
-    const el = document.getElementById("log");
-    el.textContent = msg + "\n" + el.textContent;
-  }
-</script>
+<script src="index.js"></script>
 </body>
 </html>

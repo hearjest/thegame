@@ -1,5 +1,8 @@
 import type {Card} from "./types/Card"
-import {targetSide,targetType,cardType,buffType} from "./enums"
+import {targetSide,targetType,cardType,buffType} from "./types/enums"
+import {status} from "./types/StatusEffect"
+import {E1,E2} from "./DummyGameTest/Eldritch"
+import {HK1,HK2} from "./DummyGameTest/HeathenKnight"
 const playerStrike:Card={
     name:"pee",
     cardType:cardType.ATK,
@@ -11,9 +14,9 @@ const playerStrike:Card={
     targetSide:targetSide.ENEMY,
     numTargets:3,
     canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
-    dmg:25,
+    dmg:10,
     magDmg:0,
-    inflicts:null,
+    inflicts:[],
     targetType:targetType.SINGLE_ENEMY,
           buffAmount:0,
     buffDuration:0,
@@ -34,9 +37,9 @@ const playerBuff:Card={
     canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
     dmg:5,
     magDmg:0,
-    inflicts:null,
+    inflicts:[],
     targetType:targetType.SELF,
-          buffAmount:2,
+    buffAmount:2,
     buffDuration:3,
     buffType:buffType.PHYS_DMG_MULT,
     belongsToEntityId:1
@@ -54,7 +57,7 @@ const monsterStrike: Card={
   canCherryPickIndividuals: false,
   dmg: 20,
   magDmg:0,
-  inflicts: null,
+  inflicts: [],
   targetType: targetType.SINGLE_ENEMY,
       buffAmount:0,
     buffDuration:0,
@@ -62,15 +65,24 @@ const monsterStrike: Card={
     belongsToEntityId:1101
 }
 
+
+
 const cardDictionary:Record<number,Card>={
     1:playerStrike,
     2:playerBuff,
-    3:monsterStrike
+    3:monsterStrike,
+    4:HK1,
+    5:HK2,
+    6:E1,
+    7:E2
 }
 
 function getCardById(id:number):Card{
     return cardDictionary[id]
 }
+
+
+
 
 export {cardDictionary,targetSide,getCardById}
 

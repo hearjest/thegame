@@ -1,7 +1,7 @@
-import type {Entity} from "../EntityInterface"
+import type {Entity} from "./EntityInterface"
 import type {Card,deck} from "./Card"
-import {Intent,buffType,cardType} from "../enums"
-import type {statusEffect} from "../enums"
+import {Intent,buffType,cardType} from "./enums"
+import type {statusEffect} from "./enums"
 import type {buff} from "./BuffDebuff"
 import {status} from "./StatusEffect"
 

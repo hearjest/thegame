@@ -1,9 +1,9 @@
 import type {Action} from "./types/Action"
 import {CombatState,Phase} from "./types/CombatState"
 import type {Card} from "./types/Card"
-import type {Entity} from "./EntityInterface"
+import type {Entity} from "./types/EntityInterface"
 import {cardDictionary,targetSide} from "./cardLookUpDict"
-import {targetType,cardType,buffType,Intent,statusEffect} from "./enums"
+import {targetType,cardType,buffType,Intent,statusEffect} from "./types/enums"
 import {Actor,Player,EnemyPlayer} from "./types/Player"
 import {buff} from "./types/BuffDebuff"
 import {status} from "./types/StatusEffect"
@@ -18,14 +18,16 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
         console.log("g")
         switch(card.cardType){
             case cardType.ATK:{
+                console.log(action)
                 const targetIds=getEligibleTargets(combatState, action)
-                console.log(targetIds)
+                console.log("bruh",targetIds)
                 const newEnemies=applyDmgToEnemies(combatState,card,targetIds,action)
                 const cost=card.APCost
                 const ownerDeck=combatState.players[action.ownerId].deck
                 const idx=cardLocationIndexInHand(action.cardSerialNumber, action.cardId, ownerDeck.hand)
                 const playedCard=ownerDeck.hand[idx]
                 const newHand=ownerDeck.hand.filter((_, i) => i !== idx)
+
                 const newState={
                 ...combatState,
                     enemies: newEnemies,
@@ -120,6 +122,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
 
 
 function canPlayCard(combatState: CombatState, action: Action): boolean {
+    console.log("can play card")
   if (action.type !== "playCard") {
     return false
   }
@@ -143,7 +146,9 @@ function cardLocationIndexInHand(serialCardNumber:number,cardId:number, cards:Ca
 }
 
 function getEligibleTargets(combatState:CombatState,action:Action):number[]{
+    console.log("1")
     if(action.type!=="playCard"){
+        console.log("2")
         return []
     }
     const card=cardDictionary[action.cardId]
@@ -183,6 +188,7 @@ function getEligibleTargets(combatState:CombatState,action:Action):number[]{
         }
 
         case targetType.SINGLE_ENEMY: {
+            console.log("get eligibile targets")
             if(combatState.enemies[action.targets[0]]===undefined){
                 console.log("12")
                 return []
@@ -226,6 +232,7 @@ function findEntityOwner(combatState: CombatState, entityId: number): Actor | un
 
 
 function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: number[],action:Action):CombatState["enemies"]{
+    console.log("Reach apply dmg")
     if(action.type!=="playCard"){return combatState.enemies}
 
     const entity=combatState.players[action.ownerId].team.find((ent)=>ent.id===action.entityId)
@@ -234,16 +241,21 @@ function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: numb
 
     const {pAtk,mAtk}=calcDamage(combatState.players[action.ownerId],card.dmg,card.magDmg,entity.atk,entity.magAtk)
     const newEnemies={...combatState.enemies}
-
+    
     for(const en of Object.values(combatState.enemies)){
         if(targetIds.includes(en.id)){
             const {pDef,mDef}=calcDef(en)
             const physDmg=Math.max(0, pAtk - pDef)
             const magDmg=Math.max(0, mAtk - mDef)
             const newHp=Math.max(0, en.currHp - physDmg - magDmg)
-
+            const enemyStatuses=[...en.statuses]
+            for(let i=0;i<card.inflicts.length;i++){
+                enemyStatuses.push(card.inflicts[i])
+            }
             newEnemies[en.id]={
-                ...en,currHp:newHp
+                ...en,
+                currHp:newHp,
+                statuses:enemyStatuses
             }
         }
     }

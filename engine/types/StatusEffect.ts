@@ -1,4 +1,4 @@
-import {statusEffect} from "../enums"
+import {statusEffect} from "./enums"
 
 type status={
     type:statusEffect,

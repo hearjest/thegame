@@ -1,9 +1,10 @@
 import {Card,deck} from "../types/Card"
-import {targetSide,targetType,cardType,buffType} from "../types/enums"
+import {targetSide,targetType,cardType,buffType,statusEffect} from "../types/enums"
 import {Entity} from "../types/EntityInterface"
+import {status} from "../types/StatusEffect"
 
-let HeathenKnight:Entity={
-    id:100,
+const Eldritch:Entity={
+    id:200,
     playerId:0,
     position:0,
     hp:150,
@@ -16,38 +17,47 @@ let HeathenKnight:Entity={
     rolledSpeed:0
 }
 
-const HK1:Card={
-    name:"Rusted Slash",
+const st:status={
+    type:statusEffect.POISON,
+    dmgAmount:10,
+    stacks:2,
+    roundEnd:5
+}
+
+const list:status[]=[st]
+
+const E1:Card={
+    name:"Scream",
     cardType:cardType.ATK,
-    cardId:4,
+    cardId:6,
     APCost:1,
     cardSerialNumber:2,
     description:"Slashes the enemy with a withered sword",
     flavorText:"Their blade has long past its prime",
     targetSide:targetSide.ENEMY,
     numTargets:1,
-    canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
+    canCherryPickIndividuals:true,
     dmg:5,
     magDmg:0,
-    inflicts:[],
+    inflicts:list,
     targetType:targetType.SINGLE_ENEMY,
     buffAmount:0,
     buffDuration:0,
     buffType:buffType.PHYS_DMG_ADD,
-    belongsToEntityId:100
+    belongsToEntityId:200
 }
 
-const HK2:Card={
-    name:"Outrage",
+const E2:Card={
+    name:"Slam",
     cardType:cardType.ATK,
-    cardId:5,
+    cardId:7,
     APCost:0,
     cardSerialNumber:2,
     description:"Lash out",
     flavorText:"Memories of the past shackle them still",
     targetSide:targetSide.ENEMY,
     numTargets:1,
-    canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
+    canCherryPickIndividuals:true,
     dmg:15,
     magDmg:0,
     inflicts:[],
@@ -55,16 +65,15 @@ const HK2:Card={
     buffAmount:0,
     buffDuration:0,
     buffType:buffType.PHYS_DMG_ADD,
-    belongsToEntityId:100
+    belongsToEntityId:200
 }
 
 function cloneCardWithSerial(card: Card, cardSerialNumber: number): Card {
-    const clonedCard: Card = {
+    return {
         ...card,
         inflicts: card.inflicts.map((effect) => ({ ...effect })),
-        cardSerialNumber: cardSerialNumber,
+        cardSerialNumber,
     }
-    return clonedCard
 }
 
 function cloneCard(card: Card): Card {
@@ -74,32 +83,30 @@ function cloneCard(card: Card): Card {
     }
 }
 
-
-let HeathenKnightCards:Card[]=[]
+const EldritchCards:Card[]=[]
 
 let nextSerialNumber = 1
-for(let i=0;i<4;i++){
-    HeathenKnightCards.push(cloneCardWithSerial(HK1, nextSerialNumber))
+for(let i=0;i<3;i++){
+    EldritchCards.push(cloneCardWithSerial(E1, nextSerialNumber))
     nextSerialNumber++
 }
 
 for(let i=0;i<3;i++){
-    HeathenKnightCards.push(cloneCardWithSerial(HK2, nextSerialNumber))
+    EldritchCards.push(cloneCardWithSerial(E2, nextSerialNumber))
     nextSerialNumber++
 }
 
 
-function getHeathenKnight(playerId:number): {heathenknight:Entity,heathenknightDeck:deck} {
+
+function getEldritch(playerId:number): {eldritch:Entity,eldritchDeck:deck} {
     return {
-        heathenknight: { ...HeathenKnight,playerId:playerId },
-        heathenknightDeck: {
+        eldritch: { ...Eldritch,playerId:playerId },
+        eldritchDeck: {
             hand: [],
-            drawPile: HeathenKnightCards.map(cloneCard),
+            drawPile: EldritchCards.map(cloneCard),
             discardPile: [],
         },
     }
 }
 
-
-
-export{HeathenKnight,HK1,HK2,HeathenKnightCards,getHeathenKnight}
+export{Eldritch,E1,E2,EldritchCards,getEldritch}

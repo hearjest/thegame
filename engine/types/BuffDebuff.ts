@@ -1,4 +1,4 @@
-import {buffType} from "../enums"
+import {buffType} from "./enums"
 
 
 type buff={

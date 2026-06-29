@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest"
 
-import { applyAction } from "./CombatScene"
-import { targetSide, targetType, Intent ,cardType,buffType} from "./enums"
-import type { Action } from "./types/Action"
-import type { Card, deck } from "./types/Card"
-import type { CombatState } from "./types/CombatState"
-import { Phase } from "./types/CombatState"
-import type { Entity } from "./EntityInterface"
-import type { EnemyPlayer, Player } from "./types/Player"
+import { applyAction } from "../CombatScene"
+import { targetSide, targetType, Intent ,cardType,buffType} from "../types/enums"
+import type { Action } from "../types/Action"
+import type { Card, deck } from "../types/Card"
+import type { CombatState } from "../types/CombatState"
+import { Phase } from "../types/CombatState"
+import type { Entity } from "../types/EntityInterface"
+import type { EnemyPlayer, Player } from "../types/Player"
 
 function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
   return {
@@ -39,7 +39,7 @@ const ability2:Card={
     canCherryPickIndividuals:true, //assuming you can target multiple individuals, you can choose somebody in position 1 and then 3, instead of being forced to target neighbors 1 and 2 or 2 and 3
     dmg:5,
     magDmg:0,
-    inflicts:null,
+    inflicts:[],
     targetType:targetType.SELF,
           buffAmount:2,
     buffDuration:3,
@@ -61,7 +61,7 @@ const strike: Card={
   canCherryPickIndividuals: false,
   dmg: 5,
   magDmg:0,
-  inflicts: null,
+  inflicts: [],
   targetType: targetType.SINGLE_ENEMY,
       buffAmount:0,
     buffDuration:0,
