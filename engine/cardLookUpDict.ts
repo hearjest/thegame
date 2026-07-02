@@ -59,7 +59,7 @@ const monsterStrike: Card={
   magDmg:0,
   inflicts: [],
   targetType: targetType.SINGLE_ENEMY,
-      buffAmount:0,
+    buffAmount:0,
     buffDuration:0,
     buffType:0,
     belongsToEntityId:1101

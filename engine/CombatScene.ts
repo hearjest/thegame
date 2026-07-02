@@ -7,6 +7,9 @@ import {targetType,cardType,buffType,Intent,statusEffect} from "./types/enums"
 import {Actor,Player,EnemyPlayer} from "./types/Player"
 import {buff} from "./types/BuffDebuff"
 import {status} from "./types/StatusEffect"
+
+
+
 function applyAction(combatState: CombatState, action: Action): CombatState {
   switch (action.type){
     case "playCard": {
@@ -93,7 +96,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
             default:
                 return combatState
         }
-    }
+    }//End of playCard action case here
 //---------------------------------------------------------------------------------------------------------------------
     case "useItem":{
         return combatState
@@ -218,15 +221,7 @@ function isActorAlive(actor: Actor): boolean {
   return actor.currHp > 0
 }
 
-function findEntityOwner(combatState: CombatState, entityId: number): Actor | undefined {
-  for (const p of Object.values(combatState.players)) {
-    if (p.team.some((e) => e.id === entityId)) return p
-  }
-  for (const e of Object.values(combatState.enemies)) {
-    if (e.team.some((m) => m.id === entityId)) return e
-  }
-  return undefined
-}
+
 
 
 

@@ -58,5 +58,24 @@ enum buffType{
     MAG_DEF_MULT
 }
 
+enum Phase{
+    ROUND_START,
+    ENTITY_TURN,
+    TURN_END,
+    WON,
+    LOSS,
+    RESOLVE,
+    PLAYER_PHASE,
+    ENEMY_PHASE,
+    PLAYER_TURN_END,
+    ENEMY_TURN_END,
+    PLAYERS_ALL_END
+}
 
-export{Intent,targetSide,targetType,cardType,statusEffect,buffType}
+enum selectedCharacters{
+    ELDRITCH,
+    HEATHEN_KNIGHT,
+
+}
+
+export{Intent,targetSide,targetType,cardType,statusEffect,buffType,Phase,selectedCharacters}

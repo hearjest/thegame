@@ -137,7 +137,7 @@ describe("playCard damage", () => {
       cardId: 1,
       cardSerialNumber: 1,
       targets: [1001],
-      entityId:101
+      entityId:101,
     }
     console.log(state.players[1].currAP)
     const result=applyAction(state, action)

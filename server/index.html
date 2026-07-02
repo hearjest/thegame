@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>thegame</title>
@@ -7,31 +7,71 @@
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="nav-hp">
-      <span class="heart">&#10084;</span>
-      <span id="navHpText">--/--</span>
-      <div class="bar"><div class="fill" id="navHpFill" style="width:100%"></div></div>
+
+<div id="roomSelection">
+  <h2>Rooms</h2>
+  <label><input type="radio" name="visibility" value="public" checked> Public</label>
+  <label><input type="radio" name="visibility" value="private"> Private</label>
+  <select id="capacity">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+  </select>
+  <button type="button" onclick="createRoom()">Create Room</button>
+  <div id="roomList">
+  </div>
+  <button type="button" onclick="refreshRoomList()">Refresh list</button>
+</div>
+
+
+<div id="lobbyScreen" style="display:none">
+  <h2 id="lobbyRoomId">Room</h2>
+  <div style="display:flex; gap:40px;">
+    <div>
+      <h3>Players in room</h3>
+      <div id="lobbyMembers"></div>
     </div>
-    <div class="nav-meta" id="navMeta">connecting…</div>
+    <div>
+      <h3>Choose your party (pick 2)</h3>
+      <div class="roster" id="roster"><div class="sub">connecting…</div></div>
+      <button type="button" id="confirmBtn" onclick="confirmSelection()" disabled>Confirm (0/2)</button>
+
+    </div>
   </div>
+</div>
 
-  <div class="battlefield">
-    <div class="field-label">Enemies</div>
-    <div class="enemy-row" id="enemies"></div>
-    <div class="field-label">Your party</div>
-    <div class="player-row" id="players"></div>
+  <div id="combatScreen">
+    <div class="navbar">
+      <div class="nav-hp">
+        <span class="heart">&#10084;</span>
+        <span id="navHpText">--/--</span>
+        <div class="bar"><div class="fill" id="navHpFill"></div></div>
+      </div>
+      <div class="nav-meta" id="navMeta">connecting…</div>
+    </div>
+
+    <div class="battlefield">
+      <div class="side party-side">
+        <div class="field-label">Your party</div>
+        <div class="player-row" id="players"></div>
+     </div>
+      <div class="side enemy-side">
+         <div class="field-label">Enemies</div>
+        <div class="enemy-row" id="enemies"></div>
+      </div>
+    </div>
+
+    <div class="ap"><span id="apText">0/0</span></div>
+
+    <div class="hand" id="hand"></div>
+
+    <button type="button" class="endturn" onclick="endTurn()">End Turn</button>
+
+    <button type="button" class="begin" id="beginBtn" onclick="begin()">Begin</button>
+
+    <div id="log"></div>
   </div>
-
-  <div class="ap"><span id="apText">0/0</span></div>
-
-  <div class="hand" id="hand"></div>
-
-  <button class="endturn" onclick="endTurn()">End Turn</button>
-
-  <button class="begin" id="beginBtn" onclick="begin()">Begin</button>
-
-  <div id="log"></div>
 
 <script src="index.js"></script>
 </body>

@@ -1,19 +1,17 @@
 import {Player,EnemyPlayer,Actor} from "./types/Player"
 import {CombatState,Phase} from "./types/CombatState"
 import {Card,deck} from "./types/Card"
-import {targetSide,targetType,cardType,buffType,Intent} from "./types/enums"
+import {targetSide,targetType,cardType,buffType,Intent,selectedCharacters} from "./types/enums"
 import {Entity} from "./types/EntityInterface"
 import type {Action} from "./types/Action"
 import {applyAction,playEnemyTurn,checkWinLoss,tickStatusEffects} from "./CombatScene"
 import {cardDictionary,getCardById} from "./cardLookUpDict"
 import {players,enemies, makeEntity} from "./DummyGameTest/playersDummy"
-import {getHeathenKnight} from "./DummyGameTest/HeathenKnight"
-import {getEldritch} from "./DummyGameTest/Eldritch"
+import {HeathenKnight,getHeathenKnight} from "./DummyGameTest/HeathenKnight"
+import {Eldritch,getEldritch} from "./DummyGameTest/Eldritch"
 import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStartEnd"
 
-const state=initState(players,enemies)
-let s=advance(state)
-console.log(s)
+
 
 function advance(state:CombatState):CombatState{
     let currState=state
@@ -130,11 +128,11 @@ function initState(players:Player[],enemies:EnemyPlayer[]):CombatState{
 
 
 
-function initPlayer(state:CombatState,id:number):CombatState{
+function initPlayer(state:CombatState,id:number,chars:selectedCharacters[]):CombatState{
     const newPlayers={
         ...state.players
     }
-    newPlayers[id]=makePlayer(id)
+    newPlayers[id]=makePlayer(id,chars)
     return{
         ...state,
         players:newPlayers
@@ -144,7 +142,7 @@ function initPlayer(state:CombatState,id:number):CombatState{
 
 function playerDisconnected(state:CombatState,id:number):CombatState{
     let newPlayers={...state.players}
-    newPlayers=Object.values(newPlayers).filter((pl)=>pl.id!==id)
+    delete newPlayers[id]
 
     return {
         ...state,
@@ -153,24 +151,30 @@ function playerDisconnected(state:CombatState,id:number):CombatState{
 }
 
 
-function makePlayer(id:number):Player{
-    const {eldritch,eldritchDeck}=getEldritch(id)
-    const {heathenknight,heathenknightDeck}=getHeathenKnight(id)
+function makePlayer(id:number,chars:selectedCharacters[]):Player{
+        const {team,cards}=getEntityAndDecks(id,chars)
         const baseDeckPlayer:deck={
             hand: [],
                 drawPile: [],
-                discardPile: [...eldritchDeck.drawPile,...heathenknightDeck.drawPile],
+                discardPile: [...cards],
         }
-
+        let hp=0
+        let magdef=0
+        let def=0
+        for(let i=0;i<team.length;i++){
+            const ent=team[i]
+            hp+=ent.hp
+            def+=ent.def
+            magdef+=ent.magDef
+        }
     const player2: Player={
         id: id,
         team: [
-            eldritch,
-            heathenknight
+           ...team
         ],
         deck: baseDeckPlayer,
-        totalHp: 90,
-        currHp: 90,
+        totalHp: hp,
+        currHp: hp,
         rolledSpeed: -1,
         statuses: [],
         currAP: 3,
@@ -178,8 +182,8 @@ function makePlayer(id:number):Player{
         coins: 50,
         items: [],
         handLimit: 9,
-        combinedDEF:0,
-        combinedMagDEF:0,
+        combinedDEF:def,
+        combinedMagDEF:magdef,
         position:0,
         buffEffects:[],
         roundNumUpdated:0
@@ -189,7 +193,61 @@ function makePlayer(id:number):Player{
 
 
 
+function getEntityAndDecks(id:number,chars:selectedCharacters[]):{team:Entity[],cards:Card[]}{
+    let team:Entity[]=[]
+    let cards:Card[]=[]
+    for(let i=0;i<chars.length;i++){
+        let char=chars[i]
+        switch(char){
+            case selectedCharacters.ELDRITCH:{
+                const {eldritch,eldritchDeck}=getEldritch(id)
+                team.push(eldritch)
+                cards.push(...eldritchDeck.drawPile)
+                continue
+            }
+            case selectedCharacters.HEATHEN_KNIGHT:{
+                const {heathenknight,heathenknightDeck}=getHeathenKnight(id)
+                team.push(heathenknight)
+                cards.push(...heathenknightDeck.drawPile)
+                continue
+            }
+        }
+    }
 
+    return{
+        team:team,
+        cards:cards
+
+    }
+}
+
+
+type RosterEntry = {
+  key: selectedCharacters 
+  name: string
+  hp: number
+  atk: number
+  magAtk: number
+  def: number
+  magDef: number
+}
+
+function getRoster(): RosterEntry[] {
+  return [
+    {
+      key: selectedCharacters.ELDRITCH,
+      name: "Eldritch",
+      hp: Eldritch.hp, atk: Eldritch.atk, magAtk: Eldritch.magAtk,
+      def: Eldritch.def, magDef: Eldritch.magDef,
+    },
+    {
+      key: selectedCharacters.HEATHEN_KNIGHT,
+      name: "Heathen Knight",
+      hp: HeathenKnight.hp, atk: HeathenKnight.atk, magAtk: HeathenKnight.magAtk,
+      def: HeathenKnight.def, magDef: HeathenKnight.magDef,
+    },
+  ]
+}
 
 
 function hpBar(curr: number, total: number, width = 20): string {
@@ -252,4 +310,4 @@ function displayState(state: any): void {
   console.log("========================================================\n")
 }
 
-export { displayState,advance ,initState,initPlayer,playerDisconnected}
+export { displayState,advance ,initState,initPlayer,playerDisconnected,getRoster,makePlayer}

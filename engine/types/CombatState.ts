@@ -1,19 +1,6 @@
 import type {deck} from "./Card"
 import type {Player,EnemyPlayer,Actor} from "./Player"
-enum Phase{
-    ROUND_START,
-    ENTITY_TURN,
-    TURN_END,
-    WON,
-    LOSS,
-    RESOLVE,
-    PLAYER_PHASE,
-    ENEMY_PHASE,
-    PLAYER_TURN_END,
-    ENEMY_TURN_END,
-    PLAYERS_ALL_END
-}
-
+import {Phase} from "./enums"
 
 
 
