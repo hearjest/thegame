@@ -65,6 +65,152 @@ const monsterStrike: Card={
     belongsToEntityId:1101
 }
 
+const dogBite: Card = {
+    name: "Bite",
+    cardType: cardType.ATK,
+    cardId: 8,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 8 damage.",
+    flavorText: "snap",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 70,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 991
+}
+
+const wandererSwipe: Card = {
+    name: "Swipe",
+    cardType: cardType.ATK,
+    cardId: 9,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 12 damage.",
+    flavorText: "a heavy arm falls",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 12,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 992
+}
+
+const stalkerLunge: Card = {
+    name: "Lunge",
+    cardType: cardType.ATK,
+    cardId: 10,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 10 damage.",
+    flavorText: "closes the gap",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 10,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 993
+}
+
+const stalkerMaul: Card = {
+    name: "Maul",
+    cardType: cardType.ATK,
+    cardId: 11,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 22 damage.",
+    flavorText: "everything tears",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 22,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 993
+}
+
+const nobleRebuke: Card = {
+    name: "Rebuke",
+    cardType: cardType.ATK,
+    cardId: 12,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 9 magic damage.",
+    flavorText: "you are beneath me",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 0,
+    magDmg: 9,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 994
+}
+
+const massSlam: Card = {
+    name: "Slam",
+    cardType: cardType.ATK,
+    cardId: 13,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 18 damage.",
+    flavorText: "the mass heaves",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 18,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 995
+}
+
+const massCrush: Card = {
+    name: "Crush",
+    cardType: cardType.ATK,
+    cardId: 14,
+    APCost: 0,
+    cardSerialNumber: 1,
+    description: "Deal 30 damage.",
+    flavorText: "bones to powder",
+    targetSide: targetSide.ENEMY,
+    numTargets: 1,
+    canCherryPickIndividuals: false,
+    dmg: 30,
+    magDmg: 0,
+    inflicts: [],
+    targetType: targetType.SINGLE_ENEMY,
+    buffAmount: 0,
+    buffDuration: 0,
+    buffType: 0,
+    belongsToEntityId: 995
+}
 
 
 const cardDictionary:Record<number,Card>={
@@ -74,7 +220,14 @@ const cardDictionary:Record<number,Card>={
     4:HK1,
     5:HK2,
     6:E1,
-    7:E2
+    7:E2,
+    8:dogBite,
+    9:wandererSwipe,
+    10:stalkerLunge,
+    11:stalkerMaul,
+    12:nobleRebuke,
+    13:massSlam,
+    14:massCrush
 }
 
 function getCardById(id:number):Card{

@@ -69,7 +69,8 @@ enum Phase{
     ENEMY_PHASE,
     PLAYER_TURN_END,
     ENEMY_TURN_END,
-    PLAYERS_ALL_END
+    PLAYERS_ALL_END,
+    BEGIN_NEXT_ENCOUNTER
 }
 
 enum selectedCharacters{

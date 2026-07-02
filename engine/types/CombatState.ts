@@ -3,7 +3,6 @@ import type {Player,EnemyPlayer,Actor} from "./Player"
 import {Phase} from "./enums"
 
 
-
 type CombatState={
     players:Record<number,Player>
     enemies:Record<number,EnemyPlayer>
@@ -12,6 +11,8 @@ type CombatState={
     seed:number
     rngState:number
     playersEndedTurn:number[]
+    encounters:EnemyPlayer[][]
+    encounterIndex:number
 }
 
 

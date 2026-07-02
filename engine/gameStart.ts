@@ -10,13 +10,13 @@ import {players,enemies, makeEntity} from "./DummyGameTest/playersDummy"
 import {HeathenKnight,getHeathenKnight} from "./DummyGameTest/HeathenKnight"
 import {Eldritch,getEldritch} from "./DummyGameTest/Eldritch"
 import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStartEnd"
-
+import {encounters} from "./DummyGameTest/encountersDummies"
 
 
 function advance(state:CombatState):CombatState{
     let currState=state
     console.log("start")
-    while(checkWinLoss(currState)===null){
+    while(checkWinLoss(currState)===null||checkWinLoss(currState)===Phase.BEGIN_NEXT_ENCOUNTER){
         displayState(currState)
         switch(currState.phase){
             case Phase.ROUND_START:{
@@ -79,6 +79,16 @@ function advance(state:CombatState):CombatState{
                 }
                 continue
             }
+            case Phase.BEGIN_NEXT_ENCOUNTER:{
+                console.log("--------------------ENEMY_TURN_END------------------------")
+                currState={
+                    ...currState,
+                    enemies:replaceEnemies(currState.encounters[currState.encounterIndex+1]),
+                    encounterIndex:currState.encounterIndex+1,
+                    phase:Phase.ROUND_START
+                }
+                continue
+            }
             default:{
                 break
             }
@@ -97,20 +107,23 @@ return { ...currState, phase: result ?? currState.phase }
 
 // }
 
+function replaceEnemies(newEnemies:EnemyPlayer[]):Record<number,EnemyPlayer>{
+    const enemiesRec:Record<number,EnemyPlayer>={}
+    for(let i=0;i<newEnemies.length;i++){
+        enemiesRec[newEnemies[i].id]=newEnemies[i]
+    }
+    return enemiesRec
+}
 
-
-function initState(players:Player[],enemies:EnemyPlayer[]):CombatState{
+function initState(players:Player[]):CombatState{
     let pRecord:Record<number,Player>={}
     let eRecord:Record<number,EnemyPlayer>={}
-    let playersAlive=0
-    let enemiesAlive=0
     players.forEach((pl)=>{
         pRecord[pl.id]=pl
-        playersAlive+=1
     })
+    const enemies=encounters[0]
     enemies.forEach((el)=>{
         eRecord[el.id]=el
-        enemiesAlive+=1
     })
     return {
         roundNum:0,
@@ -119,7 +132,9 @@ function initState(players:Player[],enemies:EnemyPlayer[]):CombatState{
         phase: Phase.ROUND_START,
         seed:42,
         rngState:42,
-        playersEndedTurn:[]
+        playersEndedTurn:[],
+        encounters:encounters,
+        encounterIndex:0
     } 
 
 }

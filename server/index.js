@@ -212,6 +212,7 @@ function playCard(card) {
     entityId: card.belongsToEntityId,
     roomId:currRoomId
   });
+  selectedEnemyId=null
 }
 function begin()   { send({ type: "begin" ,roomId:currRoomId}); }
 function endTurn() { send({ type: "endTurn", ownerId: myplayerid,roomId:currRoomId }); }

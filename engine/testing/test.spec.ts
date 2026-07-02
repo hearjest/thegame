@@ -6,24 +6,8 @@ import type { Action } from "../types/Action"
 import type { Card, deck } from "../types/Card"
 import type { CombatState } from "../types/CombatState"
 import { Phase } from "../types/CombatState"
-import type { Entity } from "../types/EntityInterface"
+import  { Entity,makeEntity } from "../types/EntityInterface"
 import type { EnemyPlayer, Player } from "../types/Player"
-
-function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
-  return {
-    id,
-    playerId,
-    position,
-    hp: 30,
-    atk: 6,
-    magAtk: 0,
-    def: 5,
-    magDef: 5,
-    minSpeed,
-    maxSpeed,
-    rolledSpeed: -1,
-  }
-}
 
 
 const ability2:Card={

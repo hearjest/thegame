@@ -15,7 +15,7 @@ type Room={
     playerIds:number[]
     state:CombatState|null,
     isPublic:boolean,
-    started:boolean
+    started:boolean,
 }
 
 

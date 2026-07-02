@@ -399,8 +399,8 @@ function getDefBuffAmounts(actor:Actor){
 function checkWinLoss(state: CombatState): Phase | null {
   const playersAlive=Object.values(state.players).some(p=>p.currHp>0)
   const enemiesAlive=Object.values(state.enemies).some(e=>e.currHp>0)
-
-  if (!enemiesAlive) {return Phase.WON}
+    if(!enemiesAlive&&state.encounterIndex+1<state.encounters.length){return Phase.BEGIN_NEXT_ENCOUNTER}
+  if (!enemiesAlive&&state.encounterIndex===state.encounters.length) {return Phase.WON}
   if (!playersAlive) {return Phase.LOSS}
   return null
 }

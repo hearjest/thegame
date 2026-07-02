@@ -39,7 +39,35 @@ type EnemyPlayer=Actor&{
 }
 
 
+function makeEnemyPlayer(id:number,team:Entity[],deck:deck,intent:Intent=Intent.Unknown,intentCardId:number=-1,currHp?:number):EnemyPlayer{
+  let totalHp=0
+  let def=0
+  let magdef=0
 
+  for(let i=0;i<team.length;i++){
+    const ent=team[i]
+    totalHp+=ent.hp
+    def+=ent.def
+    magdef+=ent.magDef
+  }
+
+  return {
+    id,
+    team:[...team],
+    deck,
+    totalHp,
+    currHp:currHp ?? totalHp,
+    statuses:[],
+    intent,
+    intentCardId,
+    combinedDEF:def,
+    combinedMagDEF:magdef,
+    position:0,
+    buffEffects:[],
+    roundNumUpdated:0,
+    handLimit:99,
+  }
+}
 
 // interface Entity{
 //     id:number
@@ -67,4 +95,4 @@ type EnemyPlayer=Actor&{
 
 
 
-export type {Player,EnemyPlayer,Actor}
+export {Player,EnemyPlayer,Actor,makeEnemyPlayer}

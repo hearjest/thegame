@@ -57,7 +57,7 @@ wss.on('connection', (socket) => {
                 for(const player of room.clientConnections.values()){
                     players.push(makePlayer(player.playerId,player.selectedChars))
                 }
-                room.state=initState(players,enemies)
+                room.state=initState(players)
                 room.started=true
                 dat=JSON.stringify({type:"state",state:room.state})
             }else{

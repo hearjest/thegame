@@ -14,6 +14,38 @@ interface Entity {
   hp:number
 }
 
+function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
+  return {
+    id,
+    playerId,
+    position,
+    hp: 30,
+    atk: 6,
+    magAtk: 0,
+    def: 5,
+    magDef: 5,
+    minSpeed,
+    maxSpeed,
+    rolledSpeed: -1,
+  }
+}
+
+function makeEntity2(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number,hp:number,atk:number,magAtk:number,def:number,magDef:number): Entity {
+  return {
+    id,
+    playerId,
+    position,
+    hp: hp,
+    atk: atk,
+    magAtk: magAtk,
+    def: def,
+    magDef: magDef,
+    minSpeed,
+    maxSpeed,
+    rolledSpeed: -1,
+  }
+}
 
 
-export {Entity}
+
+export {Entity,makeEntity2}
