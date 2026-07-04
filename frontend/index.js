@@ -10,7 +10,7 @@ let roster = [];
 let selected = [];
 let currRoomId=-1
 //SOCKETS-------------------------------
-const socket = new WebSocket("ws://192.168.1.249:8080");
+const socket = new WebSocket(`ws://wraityapp.net:8001`);
 
 socket.onopen = () => log("connected");
 socket.onclose = () => log("disconnected");
@@ -100,6 +100,22 @@ function renderLobby(roomId, members) {
     div.textContent = `Player ${m.playerId} — ${picks} — ${ready}`;
     el.appendChild(div);
   }
+}
+
+function showEndOverlay(text) {
+  const o = document.getElementById("endOverlay");
+  document.getElementById("endText").textContent = text;
+  o.style.display = "flex";
+}
+
+function hideEndOverlay() {
+  document.getElementById("endOverlay").style.display = "none";
+}
+
+function backToRooms() {
+  hideEndOverlay();
+  showScreen("rooms");
+  send({ type: "getRoomList" });
 }
 //SCREEN/VISUALS STUFF END
 
@@ -286,8 +302,9 @@ function render() {
     }
   }
 
-  if (PHASE[state.phase] === "WON") log("YOU WON");
-  if (PHASE[state.phase] === "LOSS") log("YOU LOST");
+if (PHASE[state.phase] === "WON")  { showEndOverlay("YOU WON"); }
+  else if (PHASE[state.phase] === "LOSS") { showEndOverlay("YOU LOST"); }
+  else { hideEndOverlay(); }
 }
 //GAMEPLAY END--------------------------------------------------------------------
 

@@ -1,0 +1,37 @@
+{
+  "name": "thegame",
+  "version": "1.0.0",
+  "type":"module",
+  "description": "![Tentative Architecture](image.png)",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hearjest/thegame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hearjest/thegame/issues"
+  },
+  "homepage": "https://github.com/hearjest/thegame#readme",
+  "dependencies": {
+    "axios": "^1.18.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "@types/ws": "^8.18.1",
+    "tsc-watch": "^7.2.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

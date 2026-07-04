@@ -15,8 +15,10 @@ const socketToPlayerIdMap:Map<WebSocket,number>=new Map()
 let roomIdCounter=0
 const roomIdToRoomMap:Map<number,Room>=new Map()
 const socketToRoomIdMap:Map<WebSocket,number>=new Map()
-const PORT = 8080
-const wss = new WebSocketServer({ port: PORT })
+const PORT = 8000
+const wss = new WebSocketServer({ port: 8080, host: '0.0.0.0' });
+
+
 
 wss.on('connection', (socket) => {
   const myId = playerIdCounter++
