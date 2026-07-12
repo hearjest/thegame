@@ -10,14 +10,16 @@ import {Room,lobbyMember} from "./room"
 import {Player} from "../engine/types/Player"
 
 
+// Attach WebSocket server to HTTPS server
+
+
 let playerIdCounter=0  
 const socketToPlayerIdMap:Map<WebSocket,number>=new Map()
 let roomIdCounter=0
 const roomIdToRoomMap:Map<number,Room>=new Map()
 const socketToRoomIdMap:Map<WebSocket,number>=new Map()
-const PORT = 8000
-const wss = new WebSocketServer({ port: 8080, host: '0.0.0.0' });
-
+const PORT = 8080
+const wss = new WebSocketServer({ port:8080,host:'0.0.0.0' });
 
 
 wss.on('connection', (socket) => {
@@ -222,4 +224,3 @@ function broadcastToRoom(room:Room,dat:string){
     })
 }
 
-console.log(`game server listening on ws://localhost:${PORT}`)

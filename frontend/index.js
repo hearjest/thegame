@@ -10,28 +10,87 @@ let roster = [];
 let selected = [];
 let currRoomId=-1
 //SOCKETS-------------------------------
-const socket = new WebSocket(`ws://wraityapp.net:8001`);
+const WS_URL = "wss://wss.wraityapp.net";
+const RECONNECT_BASE_DELAY = 1000;
+const RECONNECT_MAX_DELAY = 15000;
+let reconnectDelay = RECONNECT_BASE_DELAY;
+let reconnectTimer = null;
+let shouldReconnect = true;
+let socket = null;
 
-socket.onopen = () => log("connected");
-socket.onclose = () => log("disconnected");
-socket.onerror = (e) => log("ws error (is the server running?)");
+function connectSocket() {
+  socket = new WebSocket(WS_URL);
 
-socket.onmessage = (event) => {
-  const msg = JSON.parse(event.data);
-  if (msg.type === "error")    { log("server error: " + msg.message); return; }
-  if (msg.type === "assigned") { myplayerid = msg.playerId; log("you are player " + myplayerid); return; }
-  if (msg.type === "roster")   { roster = msg.characters; renderRoster(); return; }
-  if (msg.type === "state")    { state = msg.state; showScreen("combat"); render(); return; }
-  if(msg.type==="roomList"){ renderRoomList(msg.rooms); return; }
-  if(msg.type==="loadRoomSelect"){showScreen("rooms"); return}
-  if(msg.type==="createRoom"){ showScreen("lobby"); currRoomId=msg.roomId;return; }
-  if(msg.type==="lobbyState"){ showScreen("lobby"); renderLobby(msg.roomId, msg.members); return; }
-  if(msg.type==="beginGame"){showScreen("combat"); state=msg.state; render();}
-};
+  socket.onopen = () => {
+    reconnectDelay = RECONNECT_BASE_DELAY;
+    if (reconnectTimer !== null) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+    log("connected");
+    showScreen("rooms");
+  };
 
-function send(action) { socket.send(JSON.stringify(action)); }
+  socket.onclose = (event) => {
+    if (!shouldReconnect || event.code === 1000) return;
+    reconnectWithBackoff();
+  };
+
+  socket.onerror = (error) => {console.error('WebSocket error:', error);}
+
+  socket.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    if (msg.type === "error")    { log("server error: " + msg.message); return; }
+    if (msg.type === "assigned") { myplayerid = msg.playerId; log("you are player " + myplayerid); return; }
+    if (msg.type === "roster")   { roster = msg.characters; renderRoster(); return; }
+    if (msg.type === "state")    { state = msg.state; showScreen("combat"); render(); return; }
+    if(msg.type==="roomList"){ renderRoomList(msg.rooms); return; }
+    if(msg.type==="loadRoomSelect"){showScreen("rooms"); return}
+    if(msg.type==="createRoom"){ showScreen("lobby"); currRoomId=msg.roomId;return; }
+    if(msg.type==="lobbyState"){ showScreen("lobby"); renderLobby(msg.roomId, msg.members); return; }
+    if(msg.type==="beginGame"){showScreen("combat"); state=msg.state; render();}
+  };
+}
+
+function reconnectWithBackoff() {
+  if (reconnectTimer !== null) return;
+
+  const delay = reconnectDelay;
+  reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_DELAY);
+  log(`connection lost, retrying in ${Math.round(delay / 1000)}s`);
+
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    if (!shouldReconnect) return;
+    connectSocket();
+  }, delay);
+}
+
+connectSocket();
+
+// Heartbeat mechanism to prevent 1006
+const heartbeat = setInterval(() => {
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({ type: 'ping' }));
+  }
+}, 30000);
+
+function send(action) {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    log("not connected yet");
+    return;
+  }
+  socket.send(JSON.stringify(action));
+}
 //SOCKETS----------------------------------------------------------------------------------------
-window.addEventListener("beforeunload",()=>{socket.close();});
+window.addEventListener("beforeunload",()=>{
+  shouldReconnect = false;
+  if (reconnectTimer !== null) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+  if (socket) socket.close();
+});
 
 
 
