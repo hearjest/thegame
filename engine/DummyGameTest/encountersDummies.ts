@@ -9,29 +9,29 @@ function enemyDeck(cardIds: number[]) {
 }
 
 const encounters: EnemyPlayer[][] = [
-    [makeEnemyPlayer(101, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
+    [makeEnemyPlayer(101,"Rabid Dog",[copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
 
-    [makeEnemyPlayer(201, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
-    makeEnemyPlayer(202, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
+    [makeEnemyPlayer(201, "Rabid Dog",[copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
+    makeEnemyPlayer(202, "Rabid Dog",[copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
 
-    [makeEnemyPlayer(301, [copyEntityWithAssignedId("wanderer")], enemyDeck([8, 9]), Intent.Attack, 9),
-    makeEnemyPlayer(302, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
+    [makeEnemyPlayer(301, "Wanderer",[copyEntityWithAssignedId("wanderer")], enemyDeck([8, 9]), Intent.Attack, 9),
+    makeEnemyPlayer(302, "Rabid Dog",[copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),],
 
-    [makeEnemyPlayer(401, [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),],
+    [makeEnemyPlayer(401,"Four-Legged Stalker", [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),],
 
-    [makeEnemyPlayer(501, [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),
-makeEnemyPlayer(502, [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),
+    [makeEnemyPlayer(501,"Four-Legged Stalker", [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),
+makeEnemyPlayer(502, "Four-Legged Stalker",[copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),
     ],
-    [ makeEnemyPlayer(601, [copyEntityWithAssignedId("enlightenedNoble")], enemyDeck([12]), Intent.Attack, 12),
-        makeEnemyPlayer(602, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
-        makeEnemyPlayer(603, [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
+    [ makeEnemyPlayer(601, "Enlightened Noble",[copyEntityWithAssignedId("enlightenedNoble")], enemyDeck([12]), Intent.Attack, 12),
+        makeEnemyPlayer(602,"Rabid Dog", [copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
+        makeEnemyPlayer(603, "Rabid Dog",[copyEntityWithAssignedId("rabidDog")], enemyDeck([8]), Intent.Attack, 8),
     ],
 
-    [makeEnemyPlayer(701, [copyEntityWithAssignedId("enlightenedNoble")], enemyDeck([12]), Intent.Attack, 12),
- makeEnemyPlayer(702, [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),],
+    [makeEnemyPlayer(701, "Enlightened Noble",[copyEntityWithAssignedId("enlightenedNoble")], enemyDeck([12]), Intent.Attack, 12),
+ makeEnemyPlayer(702,"Four-Legged Stalker", [copyEntityWithAssignedId("fourLegStalker")], enemyDeck([10, 11]), Intent.Attack, 10),],
 
-    [makeEnemyPlayer(801, [copyEntityWithAssignedId("mangledMass"),copyEntityWithAssignedId("mangledMass"),], enemyDeck([13, 14]), Intent.Attack, 13),
-        makeEnemyPlayer(802, [copyEntityWithAssignedId("wanderer")], enemyDeck([8, 9]), Intent.Attack, 9),
+    [makeEnemyPlayer(801,"Mangled Mass", [copyEntityWithAssignedId("mangledMass"),copyEntityWithAssignedId("mangledMass"),], enemyDeck([13, 14]), Intent.Attack, 13),
+        makeEnemyPlayer(802,"Wanderer", [copyEntityWithAssignedId("wanderer")], enemyDeck([8, 9]), Intent.Attack, 9),
     ],
 ]
 

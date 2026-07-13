@@ -5,6 +5,7 @@ import {status} from "../types/StatusEffect"
 
 const Eldritch:Entity={
     id:200,
+    name: "Eldritch",
     playerId:0,
     position:0,
     hp:150,

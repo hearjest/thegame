@@ -315,12 +315,13 @@ function render() {
   const enemiesEl = document.getElementById("enemies");
   enemiesEl.innerHTML = "";
   for (const e of Object.values(state.enemies)) {
+
     const div = document.createElement("div");
     const alive = e.currHp > 0;
     div.className = "actor enemy" + (alive ? " targetable" : " dead") +
                     (e.id === selectedEnemyId ? " selected" : "");
     div.innerHTML =
-      `<div class="name">Enemy ${e.id}</div>` +
+      `<div class="name">${e.name}</div>` +
       `<div class="hpbar"><div class="hpfill" style="width:${hpPct(e.currHp,e.totalHp)}%"></div></div>` +
       `<div class="hptext">${e.currHp}/${e.totalHp}</div>` +
       `<div class="intent">⚔ ${INTENT[e.intent] ?? e.intent}</div>` +

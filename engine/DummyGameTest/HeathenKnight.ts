@@ -4,6 +4,7 @@ import {Entity} from "../types/EntityInterface"
 
 let HeathenKnight:Entity={
     id:100,
+    name:"Heathen Knight",
     playerId:0,
     position:0,
     hp:150,

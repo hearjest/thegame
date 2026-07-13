@@ -2,6 +2,7 @@ import {statusEffect} from "./enums"
 
 interface Entity {
   id: number
+  name:string
   playerId: number
   position: number
   atk: number
@@ -14,9 +15,10 @@ interface Entity {
   hp:number
 }
 
-function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number): Entity {
+function makeEntity(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number,name:string): Entity {
   return {
     id,
+    name,
     playerId,
     position,
     hp: 30,
@@ -30,9 +32,10 @@ function makeEntity(id: number, playerId: number, position: number, minSpeed: nu
   }
 }
 
-function makeEntity2(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number,hp:number,atk:number,magAtk:number,def:number,magDef:number): Entity {
+function makeEntity2(id: number, playerId: number, position: number, minSpeed: number, maxSpeed: number,hp:number,atk:number,magAtk:number,def:number,magDef:number,name:string): Entity {
   return {
     id,
+    name,
     playerId,
     position,
     hp: hp,

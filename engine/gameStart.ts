@@ -94,8 +94,6 @@ function advance(state:CombatState):CombatState{
             }
         }
     }
-    console.log(currState.phase)
-    console.log("GAME EXIT")
     const result = checkWinLoss(currState)
 return { ...currState, phase: result ?? currState.phase }
 
@@ -184,6 +182,7 @@ function makePlayer(id:number,chars:selectedCharacters[]):Player{
         }
     const player2: Player={
         id: id,
+        name:"Player",
         team: [
            ...team
         ],

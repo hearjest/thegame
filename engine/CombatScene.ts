@@ -14,11 +14,9 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
   switch (action.type){
     case "playCard": {
         const card=cardDictionary[action.cardId]
-        console.log("card")
         if (!canPlayCard(combatState, action)){
             return combatState
         }
-        console.log("g")
         switch(card.cardType){
             case cardType.ATK:{
                 console.log(action)
@@ -102,9 +100,6 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
         return combatState
     }
     //---------------------------------------------------------------------------------------------------------------------
-    case "reposition":{
-        return combatState
-    }
 
     case "endTurn": {
         const ended=[...combatState.playersEndedTurn, action.ownerId]

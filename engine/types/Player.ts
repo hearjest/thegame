@@ -7,6 +7,7 @@ import {status} from "./StatusEffect"
 
 type Actor = {
   id: number
+  name:string
   team: Entity[]
   deck: deck
   totalHp: number
@@ -39,7 +40,7 @@ type EnemyPlayer=Actor&{
 }
 
 
-function makeEnemyPlayer(id:number,team:Entity[],deck:deck,intent:Intent=Intent.Unknown,intentCardId:number=-1,currHp?:number):EnemyPlayer{
+function makeEnemyPlayer(id:number,name:string,team:Entity[],deck:deck,intent:Intent=Intent.Unknown,intentCardId:number=-1,currHp?:number):EnemyPlayer{
   let totalHp=0
   let def=0
   let magdef=0
@@ -66,6 +67,7 @@ function makeEnemyPlayer(id:number,team:Entity[],deck:deck,intent:Intent=Intent.
     buffEffects:[],
     roundNumUpdated:0,
     handLimit:99,
+    name:name
   }
 }
 
