@@ -10,9 +10,6 @@ import {Room,lobbyMember} from "./room"
 import {Player} from "../engine/types/Player"
 
 
-// Attach WebSocket server to HTTPS server
-
-
 let playerIdCounter=0  
 const socketToPlayerIdMap:Map<WebSocket,number>=new Map()
 let roomIdCounter=0
