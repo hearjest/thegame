@@ -1,29 +1,30 @@
 # The Game
 
+(OUTDATED) - Why use a fargate for every game session?
 ![Tentative Architecture](image.png)
 
-## A write up to guide myself
+## Write Up
 
-The user plays the game in a browser. The web content is served by Cludfront, where the actual html file(s) are hosted in S3 (tentative)
+It's live on www.wraityapp.net !
 
-The current plan is to have a single paged application be used for the UI, using React.
+I bought a domain off Cloudflare (arbitrarily) and had it proxy to my S3 bucket containing the frontend. 
 
-In order for the client to login/register/make a game/resume game session/etc, etc (EXCLUDING the actual gameplay), it has to go through the rest api gateway.
-
-The rest api gateway tells Lambda to do one of the following:
-
-1. Handle user sign-in/registration logic including connection to Aurora
-
-2. Retrieve leaderboard stuff, gameplay history, etc. If session was interuptted last time, also display the previous session
-
-3. Tell ECS to make fargate instance, give a session id
+Then the backend itself is hosted on an EC2 who only accepts incoming traffic from Cloudflare Ips. I do not anticipate any visitors to the website besides people I invite to play with me, but if I were to consider hundreds of thousands of players I would have an auto scaling group with EC2s who all publish the new state to the room key/topic that the players subscribe to.
 
 
-The Fartgate (hehe) bears the folliwing responsibilities:
+The backend is composed of two parts:
+- The game engine/logic
+- The server logic containing a web socket server and logic for creating rooms.
 
-1. Upon making server, store its location into dynamodb using session id as the key. Create entry in aurora using user id and session id, along with current game state and status
+### Game Components
 
-2. Handle all gameplay logic including validating player intent/requests to do stuff
+### Game Loop
+- I had STS2 in mind when making this game. So, the player will always go first when beginning an encounter, followed by the enemy, and then back again until one side dies. 
 
-3. (Periodically) store game session data into Aurora to replay it to most recent state
+#### Players, Enemies, Entities
+- All players/enemies are based on the Actor typing. The Actor typing contains stuff like the id, team, the combined stats of the team, statuses, buffs, current deck, etc. Where Players and EnemyPlayers differ is that players have to manage their AP and currency, while enemies just have to also show their intent.
+- Actor contains a team of Entities. Entities are the characters whom players and enemies control. They have their own stats and dedicated starter decks. Players have the combined health and defense/magic defense of each entity in their team, but when using an attack card, the attack scales off any (de)buffs and the entity's attack/magic attack
+- When it comes to multiple players, when an enemy attacks, all players are hit.
 
+### Game Engine
+- Every action taken is processed in an Action typing. For exaple when a player plays a card, a playCard action is sent to the server to verify the validity of the action, followed by the processing of that card's effects, returning the state afterward which is emitted to all players.
