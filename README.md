@@ -1,5 +1,7 @@
 # The Game
 
+Currently a work in progress. I'm hoping to draw some avatars and add more features like items, rewards on victory, procedurally generated choice-based maps. STS is my template, pretty much.
+
 (OUTDATED) - Why use a fargate for every game session?
 ![Tentative Architecture](image.png)
 
