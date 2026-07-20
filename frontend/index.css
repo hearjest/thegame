@@ -136,3 +136,30 @@ body {
     font-size: 11px; color: #7a8494; max-width: 40%; max-height: 70px; overflow: hidden;
     white-space: pre-wrap; pointer-events: none;
 }
+
+#roomSelectionContainer{
+    display:flex;
+    flex-direction: column;
+    display:flex;
+    flex-direction:column;
+    align-content: center;
+    width:25%;
+    margin-left:25%;
+
+}
+
+#roomSelection{
+    width:100%;
+}
+
+#roomMasterContainer{
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    
+}
+
+#roomListMasterCOntainer{
+    margin-left:35%;
+    width:50%
+}

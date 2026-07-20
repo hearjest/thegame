@@ -10,7 +10,10 @@
 
 <div id="roomSelection">
   <h2>Rooms</h2>
-  <label><input type="radio" name="visibility" value="public" checked> Public</label>
+  <div id="roomMasterContainer">
+  <div id="roomSelectionContainer">
+    <div>Please create or join a room.</div>
+     <label><input type="radio" name="visibility" value="public" checked> Public</label>
   <label><input type="radio" name="visibility" value="private"> Private</label>
   <select id="capacity">
     <option value="1">1</option>
@@ -19,9 +22,17 @@
     <option value="4">4</option>
   </select>
   <button type="button" onclick="createRoom()">Create Room</button>
-  <div id="roomList">
   </div>
+    <div id="roomListMasterCOntainer">
+      Current open room(s)
   <button type="button" onclick="refreshRoomList()">Refresh list</button>
+  <div id="roomListContainer">
+    <div id="roomList"></div>
+  </div>
+</div>
+</div>
+
+  </div>
 </div>
 
 

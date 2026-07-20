@@ -1,7 +1,7 @@
 {
   "name": "thegame",
   "version": "1.0.0",
-  "type":"module",
+  "type": "module",
   "description": "![Tentative Architecture](image.png)",
   "main": "index.js",
   "directories": {
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/hearjest/thegame#readme",
   "dependencies": {
     "axios": "^1.18.0",
+    "serve": "^14.2.6",
     "ws": "^8.21.0"
   },
   "devDependencies": {
