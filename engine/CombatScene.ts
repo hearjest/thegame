@@ -7,7 +7,9 @@ import {targetType,cardType,buffType,Intent,statusEffect} from "./types/enums"
 import {Actor,Player,EnemyPlayer} from "./types/Player"
 import {buff} from "./types/BuffDebuff"
 import {status} from "./types/StatusEffect"
-
+import { enemies } from "./DummyGameTest/playersDummy"
+import { Item } from "./types/Items"
+import {getItemById} from "./itemLookUpDict"
 
 
 function applyAction(combatState: CombatState, action: Action): CombatState {
@@ -97,7 +99,17 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
     }//End of playCard action case here
 //---------------------------------------------------------------------------------------------------------------------
     case "useItem":{
-        return combatState
+        const owner=findItemOwnerById(combatState,action.ownerId)
+        if(owner===null){
+            return combatState
+        }
+        const item=owner.items.filter(x=> x.id===action.itemId)
+        if (item.length===0){
+            return combatState
+        }
+        const newState = applyItemEffects(combatState,new Set(action.targets),action.itemId,owner.id)
+
+        return newState
     }
     //---------------------------------------------------------------------------------------------------------------------
 
@@ -218,7 +230,42 @@ function isActorAlive(actor: Actor): boolean {
 
 
 
+function applyItemEffects(state:CombatState,targets:Set<number>,itemId:number,ownerId:number):CombatState{
+    const item=getItemById(itemId)
+    const de_buff:buff={
+                    type:item.buff.type,
+                    amount:item.buff.amount,
+                    expiryRound:state.roundNum+item.buff.expiryRound
+                }
+    
+    let newPlayers={...state.players}
+    newPlayers[ownerId].items.filter(i=>{i.id!==item.id})
+    let newEnemies={...state.enemies}
+    for(let p of Object.values(state.players)){
+        if(targets.has(p.id)){
+            newPlayers[p.id]={
+                        ...p,
+                        buffEffects: [...p.buffEffects, de_buff],
+                    }
+        }   
+    }
+    for(let e of Object.values(state.enemies)){
+        if(targets.has(e.id)){
+            newEnemies[e.id]={
+                        ...e,
+                        buffEffects: [...e.buffEffects, de_buff],
+                    }
+        }   
+    }
+    
+    const newState={
+        ...state,
+        players:newPlayers,
+        enemies:newEnemies
+    }
 
+    return state
+}
 
 
 function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: number[],action:Action):CombatState["enemies"]{
@@ -446,6 +493,17 @@ function checkPlayerTurnEnd(state:CombatState):boolean{
         }
     }
     return allPlayersEnded
+}
+
+
+function findItemOwnerById(state:CombatState,id:number):Player|null{
+    for(let p of Object.values(state.players)){
+        if (id===p.id){
+            return p
+        }
+    }
+    throw new Error("Could not find player/enemy by that id")
+    return null
 }
 
 

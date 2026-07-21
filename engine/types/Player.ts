@@ -4,6 +4,7 @@ import {Intent,buffType,cardType} from "./enums"
 import type {statusEffect} from "./enums"
 import type {buff} from "./BuffDebuff"
 import {status} from "./StatusEffect"
+import {Item} from "./Items"
 
 type Actor = {
   id: number
@@ -27,7 +28,7 @@ type Player=Actor&{
     currAP:number
     maxAP:number
     coins:number
-    items:string[]//temp
+    items:Item[]
     handLimit:number
     rolledSpeed:number
 }

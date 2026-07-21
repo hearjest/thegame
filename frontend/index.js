@@ -10,7 +10,7 @@ let roster = [];
 let selected = [];
 let currRoomId=-1
 //SOCKETS-------------------------------
-const WS_URL = "wss://wss.wraityapp.net";
+const WS_URL = "ws://localhost:8080";
 const RECONNECT_BASE_DELAY = 1000;
 const RECONNECT_MAX_DELAY = 15000;
 let reconnectDelay = RECONNECT_BASE_DELAY;
@@ -310,6 +310,9 @@ function render() {
     document.getElementById("navHpText").textContent = `${me.currHp}/${me.totalHp}`;
     document.getElementById("navHpFill").style.width = hpPct(me.currHp, me.totalHp) + "%";
     document.getElementById("apText").textContent = `${me.currAP}/${me.maxAP}`;
+    
+    console.log(me.items)
+    document.getElementById("items").textContent=me.items[0].id
   }
 
   const enemiesEl = document.getElementById("enemies");

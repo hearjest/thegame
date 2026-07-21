@@ -54,12 +54,15 @@ wss.on('connection', (socket) => {
             }
             let players:Player[]=[]
             let dat;
+            console.log("NSFEINSOE")
             if(allPlayersReady){
                 for(const player of room.clientConnections.values()){
                     players.push(makePlayer(player.playerId,player.selectedChars))
                 }
                 room.state=initState(players)
+                console.log("BRO")
                 room.started=true
+                console.log("ITEMS BEFORE BROADCAST:", JSON.stringify(Object.values(room.state!.players).map(p => ({id: p.id, items: p.items}))))
                 dat=JSON.stringify({type:"state",state:room.state})
             }else{
                 dat=JSON.stringify({type:"lobbyState",roomId:action.roomId,members:[...room.clientConnections.values()]})

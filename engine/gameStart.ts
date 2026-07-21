@@ -11,7 +11,7 @@ import {HeathenKnight,getHeathenKnight} from "./DummyGameTest/HeathenKnight"
 import {Eldritch,getEldritch} from "./DummyGameTest/Eldritch"
 import {rollSpeed,draw,expireBuffs,drawAll,refreshAP,rollEnemyIntents,expireStatuses} from "./RoundStartEnd"
 import {encounters} from "./DummyGameTest/encountersDummies"
-
+import { getItemById } from "./itemLookUpDict"
 
 function advance(state:CombatState):CombatState{
     let currState=state
@@ -117,12 +117,16 @@ function initState(players:Player[]):CombatState{
     let pRecord:Record<number,Player>={}
     let eRecord:Record<number,EnemyPlayer>={}
     players.forEach((pl)=>{
+        pl.items.push(getItemById(1))
         pRecord[pl.id]=pl
+        
     })
     const enemies=encounters[0]
     enemies.forEach((el)=>{
         eRecord[el.id]=el
     })
+
+    console.log("ITEMS AFTER PUSH:", JSON.stringify(Object.values(pRecord).map(p => ({id: p.id, items: p.items}))))
     return {
         roundNum:0,
         players:pRecord,

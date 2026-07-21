@@ -6,7 +6,7 @@ import type { Action } from "../types/Action"
 import type { Card, deck } from "../types/Card"
 import type { CombatState } from "../types/CombatState"
 import { Phase } from "../types/CombatState"
-import  { Entity,makeEntity } from "../types/EntityInterface"
+import  { Entity,makeEntity2 } from "../types/EntityInterface"
 import type { EnemyPlayer, Player } from "../types/Player"
 
 
@@ -62,9 +62,9 @@ const baseDeck: deck={
 const player1: Player={
   id: 1,
   team: [
-    makeEntity(101, 1, 0, 2, 4),
-    makeEntity(102, 1, 1, 3, 5),
-    makeEntity(103, 1, 2, 1, 3),
+    makeEntity2(101, 1, 0, 2, 4),
+    makeEntity2(102, 1, 1, 3, 5),
+    makeEntity2(103, 1, 2, 1, 3),
   ],
   deck: baseDeck,
   totalHp: 90,
@@ -86,8 +86,8 @@ const player1: Player={
 const enemy1: EnemyPlayer={
   id: 1001,
   team: [
-    makeEntity(1101, 1001, 0, 3, 5),
-    makeEntity(1102, 1001, 1, 2, 4),
+    makeEntity2(1101, 1001, 0, 3, 5),
+    makeEntity2(1102, 1001, 1, 2, 4),
   ],
   deck: { hand: [], drawPile: [], discardPile: [] },
   totalHp: 60,
@@ -203,4 +203,4 @@ describe("playCard damage", () => {
 })
 
 
-export {makeEntity,player1,enemy1}
+export {makeEntity2,player1,enemy1}
