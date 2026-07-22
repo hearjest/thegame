@@ -10,7 +10,7 @@ let roster = [];
 let selected = [];
 let currRoomId=-1
 //SOCKETS-------------------------------
-const WS_URL = "ws://localhost:8080";//wss://wss.wraityapp.net and ws://localhost:8080
+const WS_URL = "wss://wss.wraityapp.net";//wss://wss.wraityapp.net and ws://localhost:8080
 const RECONNECT_BASE_DELAY = 1000;
 const RECONNECT_MAX_DELAY = 15000;
 let reconnectDelay = RECONNECT_BASE_DELAY;
