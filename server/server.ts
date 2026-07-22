@@ -38,7 +38,11 @@ wss.on('connection', (socket) => {
     }
     
     if(typeof action!== 'object' || action===null) {socket.send(JSON.stringify({ type: 'error', message: 'bad message shape' }));return}
+
+
     switch (action.type) {
+
+
         case "playerReady":{
             const room=roomIdToRoomMap.get(action.roomId)
             if(room===undefined){socket.send(JSON.stringify({type:"error",message:"tried readying up, but room not found"}));return}
@@ -54,15 +58,12 @@ wss.on('connection', (socket) => {
             }
             let players:Player[]=[]
             let dat;
-            console.log("NSFEINSOE")
             if(allPlayersReady){
                 for(const player of room.clientConnections.values()){
                     players.push(makePlayer(player.playerId,player.selectedChars))
                 }
                 room.state=initState(players)
-                console.log("BRO")
                 room.started=true
-                console.log("ITEMS BEFORE BROADCAST:", JSON.stringify(Object.values(room.state!.players).map(p => ({id: p.id, items: p.items}))))
                 dat=JSON.stringify({type:"state",state:room.state})
             }else{
                 dat=JSON.stringify({type:"lobbyState",roomId:action.roomId,members:[...room.clientConnections.values()]})
@@ -71,6 +72,8 @@ wss.on('connection', (socket) => {
             return 
 
         }
+
+
         case "updateLobbyStateOnCharSelect":{
             const room=roomIdToRoomMap.get(action.roomId)
             if(room===undefined){socket.send(JSON.stringify({type:"error",message:"tried updating selection, but room not found"}));return}
@@ -81,20 +84,27 @@ wss.on('connection', (socket) => {
             return
         }
 
+
         case "createRoom": {
             const room = createRoom(socket, action.isPublic, action.maxCapacity)
             if (room === undefined) {socket.send(JSON.stringify({type:"error",message:"tried making room, but return undefined"}));return}
             socket.send(JSON.stringify({ type: "createRoom", roomId: room.roomId, maxCapacity: room.maxCapacity }))
             return
         }
+
+
         case "getRoomList": {
             socket.send(JSON.stringify({ type: "roomList", rooms: getPubRooms()}))
             return
         }
+
+
         case "joinRoom": {
             joinRoom(socket, action.roomId)
             return
         }
+
+        
         default:{
             const roomId=socketToRoomIdMap.get(socket)
             if(roomId===undefined){socket.send(JSON.stringify({type:"error",message:"failed to get roomId from socket"})); return}

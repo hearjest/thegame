@@ -10,7 +10,7 @@ let roster = [];
 let selected = [];
 let currRoomId=-1
 //SOCKETS-------------------------------
-const WS_URL = "wss://wss.wraityapp.net";
+const WS_URL = "ws://localhost:8080";//wss://wss.wraityapp.net and ws://localhost:8080
 const RECONNECT_BASE_DELAY = 1000;
 const RECONNECT_MAX_DELAY = 15000;
 let reconnectDelay = RECONNECT_BASE_DELAY;
@@ -43,7 +43,7 @@ function connectSocket() {
     if (msg.type === "error")    { log("server error: " + msg.message); return; }
     if (msg.type === "assigned") { myplayerid = msg.playerId; log("you are player " + myplayerid); return; }
     if (msg.type === "roster")   { roster = msg.characters; renderRoster(); return; }
-    if (msg.type === "state")    { state = msg.state; showScreen("combat"); render(); return; }
+    if (msg.type === "state")    { state = msg.state; showScreen("combat"); render(); gameLog(msg.state.logs); return; }
     if(msg.type==="roomList"){ renderRoomList(msg.rooms); return; }
     if(msg.type==="loadRoomSelect"){showScreen("rooms"); return}
     if(msg.type==="createRoom"){ showScreen("lobby"); currRoomId=msg.roomId;return; }
@@ -369,6 +369,12 @@ if (PHASE[state.phase] === "WON")  { showEndOverlay("YOU WON"); }
   else if (PHASE[state.phase] === "LOSS") { showEndOverlay("YOU LOST"); }
   else { hideEndOverlay(); }
 }
+
+
+function addItemUsageEvents(ownerId,itemId){
+
+}
+
 //GAMEPLAY END--------------------------------------------------------------------
 
 function log(msg) {
@@ -378,4 +384,12 @@ function log(msg) {
   el.textContent = msg + "\n" + el.textContent;
 }
 
+function gameLog(msgs){
+  const el = document.getElementById("gameLog");
+  let ms=""
+  while (msgs.length>0){
+    ms = msgs.pop() + "\n" 
+  }
 
+  el.textContent = ms + el.textContent;
+}

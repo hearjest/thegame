@@ -13,6 +13,7 @@ import {getItemById} from "./itemLookUpDict"
 
 
 function applyAction(combatState: CombatState, action: Action): CombatState {
+    let msg=""
   switch (action.type){
     case "playCard": {
         const card=cardDictionary[action.cardId]
@@ -21,16 +22,14 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
         }
         switch(card.cardType){
             case cardType.ATK:{
-                console.log(action)
                 const targetIds=getEligibleTargets(combatState, action)
-                console.log("bruh",targetIds)
-                const newEnemies=applyDmgToEnemies(combatState,card,targetIds,action)
+                const {newEnemies,msgs}=applyDmgToEnemies(combatState,card,targetIds,action)
                 const cost=card.APCost
                 const ownerDeck=combatState.players[action.ownerId].deck
                 const idx=cardLocationIndexInHand(action.cardSerialNumber, action.cardId, ownerDeck.hand)
                 const playedCard=ownerDeck.hand[idx]
                 const newHand=ownerDeck.hand.filter((_, i) => i !== idx)
-
+                msg = `${action.ownerId} attacked ${targetIds.toString()}`
                 const newState={
                 ...combatState,
                     enemies: newEnemies,
@@ -76,6 +75,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
                         buffEffects: [...targetPlayer.buffEffects, de_buff],
                     }
                 }
+                msg = `${action.ownerId} buffed ${targetIds.toString()}`
                 return {
                     ...combatState,
                     players: {
@@ -90,6 +90,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
                             currAP: combatState.players[action.ownerId].currAP - cost,
                         },
                     },
+                    logs:[...combatState.logs,msg]
                 }
             }
             //---------------------------------------------------------------------------------------------------------------------
@@ -108,7 +109,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
             return combatState
         }
         const newState = applyItemEffects(combatState,new Set(action.targets),action.itemId,owner.id)
-
+        newState.logs.push(`${action.ownerId} used item ${getItemById(action.itemId).name}`)
         return newState
     }
     //---------------------------------------------------------------------------------------------------------------------
@@ -239,7 +240,7 @@ function applyItemEffects(state:CombatState,targets:Set<number>,itemId:number,ow
                 }
     
     let newPlayers={...state.players}
-    newPlayers[ownerId].items.filter(i=>{i.id!==item.id})
+    newPlayers[ownerId].items=newPlayers[ownerId].items.filter(i=>{return i.id!==item.id})
     let newEnemies={...state.enemies}
     for(let p of Object.values(state.players)){
         if(targets.has(p.id)){
@@ -264,21 +265,20 @@ function applyItemEffects(state:CombatState,targets:Set<number>,itemId:number,ow
         enemies:newEnemies
     }
 
-    return state
+    return newState
 }
 
 
-function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: number[],action:Action):CombatState["enemies"]{
-    console.log("Reach apply dmg")
-    if(action.type!=="playCard"){return combatState.enemies}
+function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: number[],action:Action):{newEnemies:CombatState["enemies"],msgs:String[]}{
+    if(action.type!=="playCard"){return {newEnemies:combatState.enemies,msgs:[]}}
+    const player=combatState.players[action.ownerId]
+    const entity=player.team.find((ent)=>ent.id===action.entityId)
 
-    const entity=combatState.players[action.ownerId].team.find((ent)=>ent.id===action.entityId)
-
-    if(entity===undefined){return combatState.enemies}
+    if(entity===undefined){return {newEnemies:combatState.enemies,msgs:[]}}
 
     const {pAtk,mAtk}=calcDamage(combatState.players[action.ownerId],card.dmg,card.magDmg,entity.atk,entity.magAtk)
     const newEnemies={...combatState.enemies}
-    
+    const msgs:String[]=[...combatState.logs]
     for(const en of Object.values(combatState.enemies)){
         if(targetIds.includes(en.id)){
             const {pDef,mDef}=calcDef(en)
@@ -294,9 +294,11 @@ function applyDmgToEnemies(combatState: CombatState, card: Card, targetIds: numb
                 currHp:newHp,
                 statuses:enemyStatuses
             }
+            msgs.push(`${player.name} did ${physDmg+magDmg} to ${en.name}`)
+            
         }
     }
-    return newEnemies
+    return {newEnemies:newEnemies,msgs:msgs}
 }
 
 // function applyDamage(combatState: CombatState, card: Card, targetIds: number[],action:Action): CombatState["enemies"] {
@@ -349,6 +351,7 @@ function playEnemyTurn(state:CombatState):CombatState{
 
 function resolveEnemyAction(state: CombatState,action:Action): CombatState {
     if(action.type!=="playEnemyIntent"){return state}
+    const msgs:String[]=[...state.logs]
     const enemy=state.enemies[action.enemyId]
     switch (enemy.intent) {
         case Intent.Attack: {
@@ -370,10 +373,12 @@ function resolveEnemyAction(state: CombatState,action:Action): CombatState {
                     ...player,
                     currHp:newHp
                 }
+                msgs.push(`${enemy.name} did ${takenphysDmg+takenMagDmg} to ${player.name}`)
             }
             return {
             ...state,
             players: newPlayers,
+            logs:msgs
             }
         }
 //--------------------------------------------------------------------------------------------
@@ -427,9 +432,9 @@ function getAtkBuffAmounts(actor:Actor){
 
 function getDefBuffAmounts(actor:Actor){
     const physDefAdd=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DEF_ADD).reduce((sum,a)=>sum+a.amount,0)
-    const physDefMult=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DEF_MULT).reduce((sum,a)=>sum+a.amount,0)
+    const physDefMult=actor.buffEffects.filter((a)=>a.type===buffType.PHYS_DEF_MULT).reduce((sum,a)=>sum+a.amount,1)
     const magDefAdd=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DEF_ADD).reduce((sum,a)=>sum+a.amount,0)
-    const magDefMult=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DEF_MULT).reduce((sum,a)=>sum+a.amount,0)
+    const magDefMult=actor.buffEffects.filter((a)=>a.type===buffType.MAG_DEF_MULT).reduce((sum,a)=>sum+a.amount,1)
     return {
         physDefAdd:physDefAdd,
         physDefMult:physDefMult,

@@ -17,10 +17,9 @@ function advance(state:CombatState):CombatState{
     let currState=state
     console.log("start")
     while(checkWinLoss(currState)===null||checkWinLoss(currState)===Phase.BEGIN_NEXT_ENCOUNTER){
-        displayState(currState)
+        //displayState(currState)
         switch(currState.phase){
             case Phase.ROUND_START:{
-                console.log("--------------------ROUND_START------------------------")
                 currState=expireBuffs(currState)
                 currState=expireStatuses(currState)
                 currState=drawAll(currState)
@@ -33,8 +32,6 @@ function advance(state:CombatState):CombatState{
                 continue
             }
             case Phase.PLAYER_PHASE:{
-                //if not player turn return
-                console.log("--------------------PLAYER_PHASE------------------------")
                     // const action: Action={
                     //     type: "playCard",
                     //     ownerId: 1,
@@ -52,7 +49,6 @@ function advance(state:CombatState):CombatState{
                 // return currState
             }
             case Phase.ENEMY_PHASE:{
-                console.log("--------------------ENEMY_PHASE------------------------")
                 currState=playEnemyTurn(currState)
                 currState=expireStatuses(currState)
                 currState={
@@ -62,7 +58,6 @@ function advance(state:CombatState):CombatState{
                 continue
             }
             case Phase.PLAYER_TURN_END:{
-                console.log("--------------------PLAYER_TURN_END------------------------")
                 currState={
                     ...currState,
                     players:tickStatusEffects(currState.players) as Record<number,Player>,
@@ -71,7 +66,6 @@ function advance(state:CombatState):CombatState{
                 continue
             }
             case Phase.ENEMY_TURN_END:{
-                console.log("--------------------ENEMY_TURN_END------------------------")
                 currState={
                     ...currState,
                     enemies:tickStatusEffects(currState.enemies) as Record<number,EnemyPlayer>,
@@ -80,7 +74,6 @@ function advance(state:CombatState):CombatState{
                 continue
             }
             case Phase.BEGIN_NEXT_ENCOUNTER:{
-                console.log("--------------------ENEMY_TURN_END------------------------")
                 currState={
                     ...currState,
                     enemies:replaceEnemies(currState.encounters[currState.encounterIndex+1]),
@@ -136,7 +129,8 @@ function initState(players:Player[]):CombatState{
         rngState:42,
         playersEndedTurn:[],
         encounters:encounters,
-        encounterIndex:0
+        encounterIndex:0,
+        logs:[]
     } 
 
 }

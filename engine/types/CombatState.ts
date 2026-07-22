@@ -13,6 +13,7 @@ type CombatState={
     playersEndedTurn:number[]
     encounters:EnemyPlayer[][]
     encounterIndex:number
+    logs:String[]
 }
 
 

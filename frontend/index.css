@@ -131,7 +131,7 @@ body {
     border: 2px solid #7af0a0; border-radius: 12px; cursor: pointer;
 }
 
-#log {
+#log,#gameLog {
     position: fixed; left: 120px; bottom: 8px; z-index: 35;
     font-size: 11px; color: #7a8494; max-width: 40%; max-height: 70px; overflow: hidden;
     white-space: pre-wrap; pointer-events: none;
