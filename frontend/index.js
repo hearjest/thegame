@@ -388,7 +388,10 @@ function gameLog(msgs){
   const el = document.getElementById("gameLog");
   let ms=""
   while (msgs.length>0){
-    ms = msgs.pop() + "\n" 
+
+    let dd=msgs.pop() 
+    console.log(dd)
+    ms = dd + "\n" 
   }
 
   el.textContent = ms + el.textContent;

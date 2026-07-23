@@ -22,10 +22,11 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
         }
         switch(card.cardType){
             case cardType.ATK:{
+                const player=combatState.players[action.ownerId]
                 const targetIds=getEligibleTargets(combatState, action)
                 const {newEnemies,msgs}=applyDmgToEnemies(combatState,card,targetIds,action)
                 const cost=card.APCost
-                const ownerDeck=combatState.players[action.ownerId].deck
+                const ownerDeck=player.deck
                 const idx=cardLocationIndexInHand(action.cardSerialNumber, action.cardId, ownerDeck.hand)
                 const playedCard=ownerDeck.hand[idx]
                 const newHand=ownerDeck.hand.filter((_, i) => i !== idx)
@@ -41,6 +42,7 @@ function applyAction(combatState: CombatState, action: Action): CombatState {
                             currAP:combatState.players[action.ownerId].currAP-cost,
                         }
                     },
+                    logs:[msg]
                 }
                 const flag=checkWinLoss(newState)
                 if(flag!==null){
@@ -351,7 +353,7 @@ function playEnemyTurn(state:CombatState):CombatState{
 
 function resolveEnemyAction(state: CombatState,action:Action): CombatState {
     if(action.type!=="playEnemyIntent"){return state}
-    const msgs:String[]=[...state.logs]
+    const msgs:String[]=[]
     const enemy=state.enemies[action.enemyId]
     switch (enemy.intent) {
         case Intent.Attack: {
