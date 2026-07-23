@@ -92,6 +92,17 @@ wss.on('connection', (socket) => {
             return
         }
 
+        case "reset":{
+            const room=roomIdToRoomMap.get(action.roomId)
+            if(room===undefined){socket.send(JSON.stringify({type:"error",message:"tried resetting, but room not found"}));return}
+            for(const memberSocket of room.clientConnections.keys()){
+                socketToRoomIdMap.delete(memberSocket)
+            }
+            roomIdToRoomMap.delete(action.roomId)
+            broadcastToRoom(room,JSON.stringify({type:"loadRoomSelect"}))
+            return
+        }
+
 
         case "getRoomList": {
             socket.send(JSON.stringify({ type: "roomList", rooms: getPubRooms()}))
